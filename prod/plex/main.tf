@@ -1,6 +1,10 @@
-provider "helm" {
-  kubernetes {
-      config_path = "~/.kube/config"
+terraform {
+  backend "s3" {
+    bucket         = "my-terraform-state"
+    key            = "prod/plex/terraform.tfstate"
+    region         = "us-east-2"
+    encrypt        = true
+    dynamodb_table = "my-lock-table"
   }
 }
 
