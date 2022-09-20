@@ -5,7 +5,7 @@ remote_state {
     if_exists = "overwrite_terragrunt"
   }
   config = {
-    bucket = "my-terraform-state"
+    bucket = "sigil-org-terraform-state"
 
     key = "${path_relative_to_include()}/terraform.tfstate"
     region         = "us-east-2"
@@ -14,15 +14,35 @@ remote_state {
   }
 }
 
+
+generate "versions" {
+  path      = "versions.tf"
+  if_exists = "overwrite_terragrunt"
+  contents  = <<EOF
+    terraform {
+      required_providers {
+        kubectl = {
+          source  = "gavinbunney/kubectl"
+          version = ">= 1.7.0"
+        }
+      }
+    }
+EOF
+}
+
 generate "provider" {
   path = "provider.tf"
   if_exists = "overwrite_terragrunt"
   contents = <<EOF
 provider "helm" {
+  debug = true
   kubernetes {
     config_path = "~/.kube/config"
   }
 }
+
+provider "kubectl" {
+  config_path = "~/.kube/config"
+}
 EOF
 }
-

@@ -1,0 +1,5 @@
+backend.tf
+provider.tf
+versions.tf
+.envrc
+.terraform*
