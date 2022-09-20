@@ -30,3 +30,16 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
 
     cd prod/
     terragrunt run-all apply
+
+# TODO
+
+- [ ] cert-manager / public access
+    - Everything will need password protection. Alternatively, I can add Auth/Autz at the Traefik layer
+- [x] Plex
+    - [ ] Volume mounts (blocked, waiting for NAS)
+    - [ ] Transcoding (blocked, waiting for NAS)
+- [ ] PiHole
+- [ ] Photoprism
+- [ ] LMS
+- [ ] Family dashboard
+    - not sure what to do here yet...maybe a custom MagicMirror?
