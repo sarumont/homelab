@@ -14,7 +14,6 @@ remote_state {
   }
 }
 
-
 generate "versions" {
   path      = "versions.tf"
   if_exists = "overwrite_terragrunt"

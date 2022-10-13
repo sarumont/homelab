@@ -43,3 +43,4 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
 - [ ] LMS
 - [ ] Family dashboard
     - not sure what to do here yet...maybe a custom MagicMirror?
+- [ ] Backups
