@@ -7,17 +7,26 @@ Terraform modules and Terragrunt config for my `homelab`. This consists of the f
 
 I consider this lab a production environment, as it runs services which my family relies upon (namely, Photoprism).
 
+The configuration here is divided into two directories:
+
+ - `k8s`
+ - `docker`
+
+Services which only need to be accessed from my LAN are run via `docker-compose`. Anything that is public-facing is run via `k8s`, secured by `cert-manager`, and protected via Traefik-enforced login.
+
 # Terraform Variables
 
-This repo contains the Terraform modules. I am running `terragrunt` from the env directories (i.e. `prod/`), so variables are set using `TF_VAR_foo` in a `direnv` file. In the future, I may split the modules from the configuration to add those variables to (private) source control.
+This repo contains the Terraform modules. I am running `terragrunt` from the env directories (i.e. `prod/k8s`), so variables are set using `TF_VAR_foo` in a `direnv` file. In the future, I may split the modules from the configuration to add those variables to (private) source control.
 
 # Requirements
+
+Docker and Docker Compose.
 
 This configuration assumes you have a `k3s` cluster deployed with the default Traefik and load balancer configuration. Your `~/.kube/config` should be configured to access this cluster.
 
 # Routing
 
-Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at a relative root, which is imperitive for certain apps (i.e. Plex) to function.
+Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at a relative root.
 
 # Environment Variables
 
@@ -28,19 +37,20 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
 
 # Usage
 
-    cd prod/
+    cd prod/k8s
     terragrunt run-all apply
 
 # TODO
 
 - [ ] cert-manager / public access
-    - Everything will need password protection. Alternatively, I can add Auth/Autz at the Traefik layer
+- [ ] Traefik AUTH
 - [x] Plex
-    - [ ] Volume mounts (blocked, waiting for NAS)
-    - [ ] Transcoding (blocked, waiting for NAS)
+    - [x] Volume mounts
+    - [x] Transcoding
 - [ ] PiHole
-- [ ] Photoprism
-- [ ] LMS
+- [x] Photoprism
+- [ ] Secondary Photoprism
+- [x] LMS
 - [ ] Family dashboard
     - not sure what to do here yet...maybe a custom MagicMirror?
 - [ ] Backups
