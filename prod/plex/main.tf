@@ -3,11 +3,6 @@ resource "helm_release" "plex" {
   repository = "../../../plex-helm-chart" #"https://charts.saturnwire.com"
   chart      = "chart"
 
-  set {
-    name  = "service.type"
-    value = "ClusterIP"
-  }
-
   dynamic "set" {
     for_each = var.domains
     content {
@@ -27,10 +22,30 @@ resource "helm_release" "plex" {
   values = [
 <<EOT
 replicaCount: ${var.replica_count}
+service:
+  type: NodePort
+  port: 32400
 image:
   tag: ${var.plex_image_tag}
 ingress:
   enabled: true
+volumeMounts:
+- name: tv
+  mountPath: /mnt/tv
+- name: movies
+  mountPath: /mnt/movies
+- name: music
+  mountPath: /mnt/music
+volumes:
+- name: tv
+  hostPath:
+    path: ${var.plex_tv_path}
+- name: movies
+  hostPath:
+    path: ${var.plex_movies_path}
+- name: music
+  hostPath:
+    path: ${var.plex_music_path}
 plex:
   timezone: ${var.timezone}
   hostname: ${var.plex_hostname}

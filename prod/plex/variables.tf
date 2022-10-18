@@ -23,3 +23,15 @@ variable "domains" {
   description = "Base domains to configure"
   type = list(string)
 }
+
+variable "plex_tv_path" {
+  description = "Path to mount for Plex TV shows"
+}
+
+variable "plex_movies_path" {
+  description = "Path to mount for Plex movies"
+}
+
+variable "plex_music_path" {
+  description = "Path to mount for Plex music"
+}
