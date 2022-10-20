@@ -18,6 +18,20 @@ Services which only need to be accessed from my LAN are run via `docker-compose`
 
 This repo contains the Terraform modules. I am running `terragrunt` from the env directories (i.e. `prod/k8s`), so variables are set using `TF_VAR_foo` in a `direnv` file. In the future, I may split the modules from the configuration to add those variables to (private) source control.
 
+# Docker Variables
+
+    export HOST=
+    export TIMEZONE=
+    export PUID=
+    export PGID=
+    export PLEX_ADVERTISE_IP=
+    export MUSIC_DIR=
+    export MOVIE_DIR=
+    export TV_DIR=
+    export PLAYLIST_DIR=
+    export PIHOLE_PASSWORD=
+    export PIHOLE_IP=
+
 # Requirements
 
 Docker and Docker Compose.
@@ -39,6 +53,8 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
 
     cd prod/k8s
     terragrunt run-all apply
+    cd ../docker
+    docker-compose up -d
 
 # TODO
 
@@ -47,9 +63,9 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
 - [x] Plex
     - [x] Volume mounts
     - [x] Transcoding
-- [ ] PiHole
+- [x] PiHole
 - [x] Photoprism
-- [ ] Secondary Photoprism
+- [ ] Secondary Photoprism (sister-in-law - necessary because Photoprism doesn't yet have user support)
 - [x] LMS
 - [ ] Family dashboard
     - not sure what to do here yet...maybe a custom MagicMirror?

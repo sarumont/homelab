@@ -3,43 +3,55 @@ services:
   lms:
     container_name: lms
     image: lmscommunity/logitechmediaserver
+    # Necessary for squeeze2upnp (I use to play to my Sonos One)
+    network_mode: "host"
     volumes:
       - ${MUSIC_DIR}/.config:/config:rw
       - ${MUSIC_DIR}:/music:ro
       - ${PLAYLIST_DIR}:/playlist:rw
       - /etc/localtime:/etc/localtime:ro
-    ports:
-      - 9000:9000/tcp
-      - 9090:9090/tcp
-      - 3483:3483/tcp
-      - 3483:3483/udp
     restart: unless-stopped
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
+      PUID: ${PUID}
+      PGID: ${PGID}
   plex:
     image: plexinc/pms-docker
     restart: unless-stopped
     container_name: plex
     ports:
-      - "32400:32400/tcp"
-      - "3005:3005/tcp"
-      - "8324:8324/tcp"
-      - "32469:32469/tcp"
-      - "1900:1900/udp"
-      - "32410:32410/udp"
-      - "32412:32412/udp"
-      - "32413:32413/udp"
-      - "32414:32414/udp"
+      - 32400:32400/tcp
+      - 3005:3005/tcp
+      - 8324:8324/tcp
+      - 32469:32469/tcp
+      # - 1900:1900/udp
+      - 32410:32410/udp
+      - 32412:32412/udp
+      - 32413:32413/udp
+      - 32414:32414/udp
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TIMEZONE}
-      - HOSTNAME=${HOST}
-      - ADVERTISE_IP=${PLEX_ADVERTISE_IP}
+      PUID: ${PUID}
+      PGID: ${PGID}
+      TZ: ${TIMEZONE}
+      HOSTNAME: ${HOST}
+      ADVERTISE_IP: ${PLEX_ADVERTISE_IP}
         #- PLEX_CLAIM=
     volumes:
       - ${MUSIC_DIR}:/mnt/music
       - ${TV_DIR}:/mnt/tv
       - ${MOVIE_DIR}:/mnt/movies
       - "~/.docker/plex/config:/config"
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      # Specify IP here because `systemd-resolved` binds to 127.0.0.x:53, so we can't bind to 0.0.0.0:53
+      - ${PIHOLE_IP}:53:53/tcp
+      - ${PIHOLE_IP}:53:53/udp
+      - 8888:80/tcp
+    environment:
+      TZ: ${TIMEZONE}
+      WEBPASSWORD: ${PIHOLE_PASSWORD}
+    volumes:
+      - '~/.docker/pihole/etc:/etc/pihole'
+      - '~/.docker/pihole/dnsmasq.d:/etc/dnsmasq.d'
+    restart: unless-stopped
