@@ -44,9 +44,8 @@ services:
     container_name: pihole
     image: pihole/pihole:latest
     ports:
-      # Specify IP here because `systemd-resolved` binds to 127.0.0.x:53, so we can't bind to 0.0.0.0:53
-      - ${PIHOLE_IP}:53:53/tcp
-      - ${PIHOLE_IP}:53:53/udp
+      - 53:53/tcp
+      - 53:53/udp
       - 8888:80/tcp
     environment:
       TZ: ${TIMEZONE}
