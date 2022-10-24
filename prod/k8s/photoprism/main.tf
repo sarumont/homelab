@@ -1,6 +1,6 @@
 resource "helm_release" "photoprism" {
   name       = "photoprism"
-  repository = "../../../" # https://p80n.github.io/photoprism-helm/"
+  repository = "../../../../" # https://p80n.github.io/photoprism-helm/"
   chart      = "photoprism-helm" #"photoprism"
 
   set {
@@ -37,6 +37,7 @@ image:
 config:
   PHOTOPRISM_DEBUG: true
   PHOTOPRISM_READONLY: false
+  PHOTOPRISM_PUBLIC: true
 ingress:
   enabled: true
   tls: []
