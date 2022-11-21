@@ -1,3 +1,32 @@
+# Configure the MySQL provider
+provider "mysql" {
+  endpoint = "localhost:32306"
+  username = "root"
+  password = "${var.db_root_password}"
+}
+
+resource "random_password" "photoprism_db_password" {
+  length           = 16
+  special          = false
+}
+
+resource "mysql_user" "photoprism_db_user" {
+  user               = "photoprism"
+  host               = "%"
+  plaintext_password = "${random_password.photoprism_db_password.result}"
+}
+
+resource "mysql_database" "photoprism_db" {
+  name = "photoprism"
+}
+
+resource "mysql_grant" "photoprism_db_grant" {
+  user       = "${mysql_user.photoprism_db_user.user}"
+  host       = "${mysql_user.photoprism_db_user.host}"
+  database   = "${mysql_database.photoprism_db.name}"
+  privileges = ["ALL"]
+}
+
 resource "helm_release" "photoprism" {
   name       = "photoprism"
   repository = "../../../../" # https://p80n.github.io/photoprism-helm/"
@@ -34,10 +63,12 @@ resource "helm_release" "photoprism" {
 replicaCount: ${var.replica_count}
 image:
   tag: ${var.photoprism_image_tag}
+  pullPolicy: Always
 config:
   PHOTOPRISM_DEBUG: true
   PHOTOPRISM_READONLY: false
-  PHOTOPRISM_PUBLIC: true
+  PHOTOPRISM_PUBLIC: false
+  PHOTOPRISM_WORKERS: 2
 ingress:
   enabled: true
   tls: []
@@ -63,6 +94,13 @@ persistence:
   - name: imports
     hostPath:
       path: ${var.photoprism_imports_path}
+database:
+  driver: mysql
+  name: ${mysql_database.photoprism_db.name}
+  user: ${mysql_user.photoprism_db_user.user}
+  password: ${random_password.photoprism_db_password.result}
+  port: 3306
+  host: mariadb.shared.svc.cluster.local
 EOT
   ]
 }

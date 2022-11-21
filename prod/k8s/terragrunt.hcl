@@ -24,6 +24,11 @@ generate "versions" {
           source  = "gavinbunney/kubectl"
           version = ">= 1.7.0"
         }
+
+        mysql = {
+          source = "petoju/mysql"
+          version = ">= 3.0.24"
+        }
       }
     }
 EOF

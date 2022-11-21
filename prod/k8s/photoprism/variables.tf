@@ -26,3 +26,7 @@ variable "photoprism_originals_path" {
 variable "photoprism_imports_path" {
   description = "Path to mount for Photoprism imports"
 }
+
+variable "db_root_password" {
+  description = "Root password to the database"
+}
