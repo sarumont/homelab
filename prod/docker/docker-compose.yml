@@ -2,7 +2,7 @@ version: '3'
 services:
   lms:
     container_name: lms
-    image: lmscommunity/logitechmediaserver
+    image: lmscommunity/logitechmediaserver:8.4.0
     # Necessary for squeeze2upnp (I use to play to my Sonos One)
     network_mode: "host"
     volumes:
@@ -15,7 +15,7 @@ services:
       PUID: ${PUID}
       PGID: ${PGID}
   plex:
-    image: plexinc/pms-docker
+    image: plexinc/pms-docker:1.29.1.6316-f4cdfea9c
     restart: unless-stopped
     container_name: plex
     ports:

@@ -70,3 +70,4 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
 - [ ] Family dashboard
     - not sure what to do here yet...maybe a custom MagicMirror?
 - [ ] Backups
+    - Photoprism (docker): `docker-compose exec -T photoprism photoprism backup -i - > photoprism-db.sql`
