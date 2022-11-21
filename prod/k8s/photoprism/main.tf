@@ -67,8 +67,8 @@ image:
 config:
   PHOTOPRISM_DEBUG: true
   PHOTOPRISM_READONLY: false
-  PHOTOPRISM_PUBLIC: false
   PHOTOPRISM_WORKERS: 2
+  PHOTOPRISM_AUTH_MODE: password
 ingress:
   enabled: true
   tls: []
