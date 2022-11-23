@@ -6,7 +6,7 @@ services:
     # Necessary for squeeze2upnp (I use to play to my Sonos One)
     network_mode: "host"
     volumes:
-      - ${MUSIC_DIR}/.config:/config:rw
+      - ~/.docker/lms/config:/config:rw
       - ${MUSIC_DIR}:/music:ro
       - ${PLAYLIST_DIR}:/playlist:rw
       - /etc/localtime:/etc/localtime:ro
