@@ -15,7 +15,7 @@ services:
       PUID: ${PUID}
       PGID: ${PGID}
   plex:
-    image: plexinc/pms-docker:1.29.1.6316-f4cdfea9c
+    image: plexinc/pms-docker:1.29.2.6364-6d72b0cf6
     restart: unless-stopped
     container_name: plex
     ports:
@@ -34,7 +34,8 @@ services:
       TZ: ${TIMEZONE}
       HOSTNAME: ${HOST}
       ADVERTISE_IP: ${PLEX_ADVERTISE_IP}
-        #- PLEX_CLAIM=
+    devices:
+     - /dev/dri:/dev/dri
     volumes:
       - ${MUSIC_DIR}:/mnt/music
       - ${TV_DIR}:/mnt/tv
