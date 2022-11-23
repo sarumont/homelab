@@ -1,0 +1,35 @@
+version: '3'
+services:
+  lms:
+    container_name: lms
+    image: lmscommunity/logitechmediaserver:8.4.0
+    volumes:
+      - ~/.docker/lms/config:/config:rw
+      - ${MUSIC_DIR}:/music:ro
+      - ${MUSIC_DIR}/playlists:/playlist:rw
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      PUID: ${PUID}
+      PGID: ${PGID}
+    ports:
+      - 9000:9000/tcp
+      - 9090:9090/tcp
+      - 1900:1900/udp
+      - 3483:3483/tcp
+      - 3483:3483/udp
+    restart: unless-stopped
+  pihole:
+    container_name: pihole
+    image: pihole/pihole:latest
+    ports:
+      - 53:53/tcp
+      - 53:53/udp
+      - 8888:80/tcp
+    environment:
+      TZ: ${TIMEZONE}
+      WEBPASSWORD: ${PIHOLE_PASSWORD}
+    volumes:
+      - '~/.docker/pihole/etc:/etc/pihole'
+      - '~/.docker/pihole/dnsmasq.d:/etc/dnsmasq.d'
+    restart: unless-stopped
+
