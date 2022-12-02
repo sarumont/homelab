@@ -7,12 +7,13 @@ Terraform modules and Terragrunt config for my `homelab`. This consists of the f
 
 I consider this lab a production environment, as it runs services which my family relies upon (namely, Photoprism).
 
-The configuration here is divided into two directories:
+The configuration here is divided into three directories:
 
  - `k8s`
  - `docker`
+ - `edge`
 
-Services which only need to be accessed from my LAN are run via `docker-compose`. Anything that is public-facing is run via `k8s`, secured by `cert-manager`, and protected via Traefik-enforced login.
+Services which only need to be accessed from my LAN are run via `docker-compose`. Anything that is public-facing is in a `k8s` cluster. Public access is provided via reverse proxy on a Linode server attached to my Tailscale network. Each service behind this proxy has individual login (for now, it's only Photoprism).
 
 # Terraform Variables
 
@@ -40,7 +41,7 @@ This configuration assumes you have a `k3s` cluster deployed with the default Tr
 
 # Routing
 
-Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at a relative root.
+Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at a relative root path.
 
 # Environment Variables
 
@@ -58,7 +59,7 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
 
 # TODO
 
-- [ ] cert-manager / public access
+- [x] cert-manager / public access (via edge)
 - [ ] Traefik AUTH
 - [x] Plex
     - [x] Volume mounts
@@ -70,4 +71,5 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
 - [ ] Family dashboard
     - not sure what to do here yet...maybe a custom MagicMirror?
 - [ ] Backups
+    - all locally mounted volumes (anything in `~/.docker`)
     - Photoprism (docker): `docker-compose exec -T photoprism photoprism backup -i - > photoprism-db.sql`
