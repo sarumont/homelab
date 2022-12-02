@@ -69,6 +69,7 @@ config:
   PHOTOPRISM_READONLY: false
   PHOTOPRISM_WORKERS: 2
   PHOTOPRISM_AUTH_MODE: password
+  PHOTOPRISM_SITE_URL: ${var.photoprism_site_url}
 ingress:
   enabled: true
   tls: []

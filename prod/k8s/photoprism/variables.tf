@@ -15,6 +15,11 @@ variable "domains" {
   type = list(string)
 }
 
+variable "photoprism_site_url" {
+  description = "URL for public access to Photoprism"
+  default = "http://photoprism.me:2342"
+}
+
 variable "photoprism_storage_path" {
   description = "Path to mount for Photoprism storage"
 }
