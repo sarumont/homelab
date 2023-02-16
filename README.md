@@ -66,7 +66,7 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
     - [x] Transcoding
 - [x] PiHole
 - [x] Photoprism
-- [ ] Secondary Photoprism (sister-in-law - necessary because Photoprism doesn't yet have user support)
+- [x] Secondary Photoprism (sister-in-law - necessary because Photoprism doesn't yet have multiple library support)
 - [x] LMS
 - [ ] Family dashboard
     - not sure what to do here yet...maybe a custom MagicMirror?
