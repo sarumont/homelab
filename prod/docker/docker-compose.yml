@@ -3,7 +3,8 @@ services:
   lms:
     container_name: lms
     image: lmscommunity/logitechmediaserver:8.4.0
-    # Necessary for squeeze2upnp (I use to play to my Sonos One)
+    pull_policy: always
+    # Necessary for squeeze2upnp, Spotify Connect (using Avahi)
     network_mode: "host"
     volumes:
       - ~/.docker/lms/config:/config:rw
