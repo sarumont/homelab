@@ -16,7 +16,7 @@ services:
       PUID: ${PUID}
       PGID: ${PGID}
   plex:
-    image: plexinc/pms-docker:1.31.0.6654-02189b09f
+    image: plexinc/pms-docker:1.31.2.6810-a607d384f
     restart: unless-stopped
     container_name: plex
     ports:
