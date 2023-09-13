@@ -8,7 +8,23 @@ resource "kubernetes_manifest" "lb_pool" {
     }
     "spec" = {
       "addresses" = [
-        "172.21.1.30-172.21.1.40"
+        var.lb_pool
+      ]
+    }
+  }
+}
+
+resource "kubernetes_manifest" "lb_advertisement" {
+  manifest = {
+    "apiVersion" = "metallb.io/v1beta1"
+    "kind"       = "L2Advertisement"
+    "metadata" = {
+      "name"      = "lb-pool-advertisement"
+      "namespace" = "metallb-system"
+    }
+    "spec" = {
+      "ipAddressPools" = [
+        kubernetes_manifest.lb_pool.manifest.metadata.name
       ]
     }
   }
