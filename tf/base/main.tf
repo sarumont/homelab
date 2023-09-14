@@ -1,3 +1,4 @@
+# MetalLB
 resource "kubernetes_namespace" "metallb_ns" {
   metadata {
     name = "metallb-system"
@@ -11,6 +12,39 @@ resource "helm_release" "metallb" {
   namespace  = "metallb-system"
 }
 
+resource "kubernetes_manifest" "lb_pool" {
+  manifest = {
+    "apiVersion" = "metallb.io/v1beta1"
+    "kind"       = "IPAddressPool"
+    "metadata" = {
+      "name"      = "lb-pool"
+      "namespace" = "metallb-system"
+    }
+    "spec" = {
+      "addresses" = [
+        var.lb_pool
+      ]
+    }
+  }
+}
+
+resource "kubernetes_manifest" "lb_advertisement" {
+  manifest = {
+    "apiVersion" = "metallb.io/v1beta1"
+    "kind"       = "L2Advertisement"
+    "metadata" = {
+      "name"      = "lb-pool-advertisement"
+      "namespace" = "metallb-system"
+    }
+    "spec" = {
+      "ipAddressPools" = [
+        kubernetes_manifest.lb_pool.manifest.metadata.name
+      ]
+    }
+  }
+}
+
+# Nginx ingress
 resource "kubernetes_namespace" "ingress_nginx" {
   metadata {
     name = "ingress-nginx"
@@ -59,57 +93,7 @@ resource "helm_release" "nfs_pvc" {
   }
 }
 
-# resource "kubernetes_namespace" "k8s_dashboard" {
-#   metadata {
-#     name = "k8s-dashboard"
-#   }
-# }
-
-# resource "helm_release" "k8s_dashboard" {
-#   name       = "k8s-dashboard"
-#   repository = "https://kubernetes.github.io/dashboard"
-#   chart      = "kubernetes-dashboard"
-#   version    = var.k8s_dashboard_chart_version
-#   namespace  = kubernetes_namespace.k8s_dashboard.metadata.0.name
-#
-#   values = [
-# <<EOT
-# app:
-#   ingress:
-#     enabled: true
-#     hosts:
-#     - dashboard.homelab.local
-# metrics-server:
-#   enabled: false
-# nginx:
-#   enabled: false
-# EOT
-#   ]
-# }
-
-# resource "kubernetes_namespace" "authelia" {
-#   metadata {
-#     name = "authelia"
-#   }
-# }
-#
-# resource "helm_release" "authelia" {
-#   name       = "authelia"
-#   repository = "https://charts.authelia.com"
-#   chart      = "authelia"
-#   version    = var.authelia_chart_version
-#   namespace  = kubernetes_namespace.authelia.metadata.0.name
-#
-#   values = [
-# <<EOT
-# ingress:
-#   enabled: true
-# EOT
-#   ]
-# }
-
-#$ helm install my-hello cloudecho/hello -n default --version=0.1.2
-
+# hello world app
 resource "helm_release" "hello_world" {
   name       = "hello-world"
   repository = "https://cloudecho.github.io/charts/"

@@ -18,3 +18,7 @@ variable "nfs_path" {
 variable "ingress_ip" {
   description = "IP address to request for the ingress"
 }
+
+variable "lb_pool" {
+  description = "IP address Pool to use for load balancer"
+}
