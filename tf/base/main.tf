@@ -133,3 +133,25 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
     }
   }
 }
+
+# cert-manager
+module "cert_manager" {
+  source        = "terraform-iaac/cert-manager/kubernetes"
+
+  cluster_issuer_email                   = "admin@sigil.org"
+}
+
+# NFD
+resource "kubernetes_namespace" "nfd_ns" {
+  metadata {
+    name = "node-feature-discovery"
+  }
+}
+
+resource "helm_release" "nfd" {
+  name       = "node-feature-discovery"
+  repository = "https://kubernetes-sigs.github.io/node-feature-discovery/charts"
+  chart      = "node-feature-discovery"
+  version    = var.nfd_chart_version
+  namespace  = kubernetes_namespace.nfd_ns.metadata.0.name
+}

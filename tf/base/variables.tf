@@ -3,6 +3,11 @@ variable "nginx_chart_version" {
   default = "4.7.2"
 }
 
+variable "nfd_chart_version" {
+  description = "Version of the nfd Helm chart to use"
+  default = "0.13.1"
+}
+
 variable "cluster_domain" {
   description = "Domain to use for cluster DNS names"
 }
