@@ -23,4 +23,9 @@ resource "helm_release" "intel_device_plugins_gpu" {
     name = "nodeFeatureRule"
     value = true
   }
+
+  set {
+    name = "sharedDevNum"
+    value = var.shared_device_number
+  }
 }
