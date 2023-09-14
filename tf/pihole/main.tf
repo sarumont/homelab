@@ -50,6 +50,9 @@ DNS2: 1.1.1.1
 
 hostname: pihole
 
+# prevents chown errors when using NFS w/ mapall for the PVC
+privileged: true
+
 adminPassword: "${random_password.admin_password.result}"
 
 persistentVolumeClaim:

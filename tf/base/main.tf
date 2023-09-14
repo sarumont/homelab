@@ -9,7 +9,7 @@ resource "helm_release" "metallb" {
   name       = "metallb"
   repository = "https://metallb.github.io/metallb"
   chart      = "metallb"
-  namespace  = "metallb-system"
+  namespace  = kubernetes_namespace.metallb_ns.metadata.0.name
 }
 
 resource "kubernetes_manifest" "lb_pool" {
@@ -18,7 +18,7 @@ resource "kubernetes_manifest" "lb_pool" {
     "kind"       = "IPAddressPool"
     "metadata" = {
       "name"      = "lb-pool"
-      "namespace" = "metallb-system"
+      "namespace"  = kubernetes_namespace.metallb_ns.metadata.0.name
     }
     "spec" = {
       "addresses" = [
@@ -34,7 +34,7 @@ resource "kubernetes_manifest" "lb_advertisement" {
     "kind"       = "L2Advertisement"
     "metadata" = {
       "name"      = "lb-pool-advertisement"
-      "namespace" = "metallb-system"
+      "namespace"  = kubernetes_namespace.metallb_ns.metadata.0.name
     }
     "spec" = {
       "ipAddressPools" = [
