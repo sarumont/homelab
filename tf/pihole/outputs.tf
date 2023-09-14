@@ -1,5 +1,5 @@
-output "pihole_admin_password" {
-  value = random_password.pihole_admin_password.result
+output "admin_password" {
+  value = random_password.admin_password.result
   sensitive = true
 }
 
