@@ -22,6 +22,10 @@ Note that this is designed to be lights-out, but you cannot manage adlists from 
 
 Module enabling detecting and allocating Intel GPUs as schedulable resources in your cluster. This is useful for hardware decoding.
 
+## Plex
+
+Module to deploy Plex Media Server, mounting media libraries via NFS.
+
 # Usage
 
 My (private) IaC repo looks something like this:
