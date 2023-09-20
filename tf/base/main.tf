@@ -116,7 +116,7 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
   spec {
     ingress_class_name = "nginx"
     rule {
-      host = "dashboard.${var.cluster_domain}"
+      host = "hello.${var.cluster_domain}"
       http {
         path {
           backend {
