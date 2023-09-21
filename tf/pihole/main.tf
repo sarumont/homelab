@@ -50,9 +50,6 @@ DNS2: 1.1.1.1
 
 hostname: pihole
 
-# prevents chown errors when using NFS w/ mapall for the PVC
-privileged: true
-
 adminPassword: "${random_password.admin_password.result}"
 
 persistentVolumeClaim:
@@ -60,13 +57,11 @@ persistentVolumeClaim:
 
 # allow both the web and DNS servers to run on the same IP
 serviceWeb:
-  loadBalancerIP: ${var.ip}
   annotations:
     metallb.universe.tf/allow-shared-ip: pihole-svc
   type: LoadBalancer
 
 serviceDns:
-  loadBalancerIP: ${var.ip}
   annotations:
     metallb.universe.tf/allow-shared-ip: pihole-svc
   type: LoadBalancer
@@ -74,6 +69,14 @@ serviceDns:
 # not using DHCP
 serviceDhcp:
   enabled: false
+
+resources:
+  requests:
+    memory: 128Mi
+    cpu: 100m
+  limits:
+    memory: 2Gi
+    cpu: 1
 EOT
   ]
 }

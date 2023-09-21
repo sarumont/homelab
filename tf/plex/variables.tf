@@ -1,3 +1,8 @@
+variable "timezone" {
+  description = "Timezone to use for various services"
+  default = "America/Denver"
+}
+
 variable "chart_version" {
   description = "Version of the Plex Helm chart to use"
   default = "2.1.1"

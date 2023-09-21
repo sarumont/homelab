@@ -50,6 +50,8 @@ resource "helm_release" "plex" {
 
   values = [
 <<EOT
+env: 
+  TZ: ${var.timezone}
 image:
   repository: docker.io/plexinc/pms-docker
   tag: ${var.image_version}

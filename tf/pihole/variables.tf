@@ -13,10 +13,6 @@ variable "image_version" {
   default = "2023.05.2"
 }
 
-variable "ip" {
-  description = "IP address to assign to PiHole"
-}
-
 variable "custom_dns_entries" {
   description = "Custom DNS entries to add to Pihole"
   type = list(string)
