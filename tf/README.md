@@ -44,3 +44,13 @@ My (private) IaC repo looks something like this:
     .envrc
 
 This contains local config (IPs, etc.) and secrets (in my `.envrc` - for accessing S3 for the Terraform state).
+
+# Notes
+
+I started down the path of using NFS for the default `storageClass`, but that is problematic when applications use SQLite underneath. I have since settled on using local storage for the default PVCs. To prevent data loss in this scenario, I attempt to:
+
+1. drive everything I can from the Terragrunt configuration. Since this is in a (separate) git repo, it is backed up and replicated and can easily be used to rebuild the cluster
+1. optionally use NFS where SQLite isn't a factor
+1. back up important things via external means (i.e. - database backups, etc.)
+
+This allows me to use node-local storage for the pod PVCs, NFS for shared resources (i.e. Plex libraries), and avoid problems with SQLite over NFS.

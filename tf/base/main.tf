@@ -89,7 +89,7 @@ resource "helm_release" "nfs_pvc" {
 
   set {
     name = "storageClass.defaultClass"
-    value = true
+    value = false
   }
 }
 
