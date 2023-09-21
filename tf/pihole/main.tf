@@ -57,11 +57,13 @@ persistentVolumeClaim:
 
 # allow both the web and DNS servers to run on the same IP
 serviceWeb:
+  loadBalancerIP: ${var.ip}
   annotations:
     metallb.universe.tf/allow-shared-ip: pihole-svc
   type: LoadBalancer
 
 serviceDns:
+  loadBalancerIP: ${var.ip}
   annotations:
     metallb.universe.tf/allow-shared-ip: pihole-svc
   type: LoadBalancer

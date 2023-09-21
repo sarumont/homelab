@@ -29,6 +29,10 @@ variable "namespace" {
   default = "plex"
 }
 
+variable "ip" {
+  description = "IP address to assign to Plex"
+}
+
 variable "nfs_volumes" {
   description = "NFS volumes to mount"
   type = list(

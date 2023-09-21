@@ -52,6 +52,7 @@ resource "helm_release" "plex" {
 <<EOT
 env: 
   TZ: ${var.timezone}
+  ADVERTISE_IP: ${var.ip}
 image:
   repository: docker.io/plexinc/pms-docker
   tag: ${var.image_version}
@@ -59,6 +60,7 @@ ingress:
   enabled: false
 service:
   type: LoadBalancer
+  loadBalancerIP: ${var.ip}
 resources: 
     requests: 
         gpu.intel.com/i915: "1" 
