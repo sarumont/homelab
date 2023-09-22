@@ -52,7 +52,7 @@ resource "helm_release" "plex" {
 <<EOT
 env: 
   TZ: ${var.timezone}
-  ADVERTISE_IP: ${var.ip}
+  ADVERTISE_IP: http://${var.ip}:32400
 image:
   repository: docker.io/plexinc/pms-docker
   tag: ${var.image_version}
