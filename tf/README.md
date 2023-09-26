@@ -16,7 +16,12 @@ This contains basic k8s setup including:
 
 Pihole in k8s. DHCP is disabled in this implementation, as I am assuming that there is a router somewhere performing DHCP services (does anyone use Pihole's DHCP?).
 
-Note that this is designed to be lights-out, but you cannot manage adlists from the config anymore. Instead, you [must use the UI](https://discourse.pi-hole.net/t/how-to-update-adlists-from-adlists-list-file/38370)
+Note that this is designed to be lights-out, but you cannot manage adlists from the config anymore. Instead, you [must use the UI](https://discourse.pi-hole.net/t/how-to-update-adlists-from-adlists-list-file/38370). I use several from [firebog.net]():
+
+    https://raw.githubusercontent.com/DandelionSprout/adfilt/master/Alternate%20versions%20Anti-Malware%20List/AntiMalwareHosts.txt
+    https://v.firebog.net/hosts/Easyprivacy.txt
+    https://v.firebog.net/hosts/AdguardDNS.txt
+    https://raw.githubusercontent.com/PolishFiltersTeam/KADhosts/master/KADhosts.txt
 
 ## intel_gpu
 
