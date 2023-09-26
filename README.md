@@ -1,11 +1,20 @@
-Terraform modules and Terragrunt config for my `homelab`. This consists of the following services:
+Terraform modules, Helm charts, and some docker-compose files for running my `homelab`.
+
+This consists of several services including (but not limited to):
 
  - PiHole
  - Plex
  - Photoprism
- - LMS
+ - Logitech Media Server (LMS)
+ - Unifi Controller
 
 I consider this lab a production environment, as it runs services which my family relies upon (namely, Photoprism).
+
+Terraform modules can be found in [`tf`](./tf) and drive the majority of this setup. I run everything in a 3-node k8s cluster (Thinkcenter m900s). V1 of the lab was split into `docker-compose` and `k8s`, but with V2 I am migrating everything to `k8s` for simplicity. This is still an ongoing process.
+
+# V1 README
+
+Everything below was from the V1 README. I am leaving it in here while I migrate to my V2 config. Some of this will remain but most will disappear.
 
 The configuration here is divided into three directories:
 
