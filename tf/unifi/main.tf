@@ -21,6 +21,10 @@ image:
     TZ: ${var.timezone}
   service:
     loadBalancerIP: ${var.ip}
+  persistence:
+    storageClass: ""
+    backup:
+      storageClass: ""
   resources:
     requests:
       cpu: 100m
