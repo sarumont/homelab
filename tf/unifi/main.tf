@@ -22,9 +22,9 @@ environment:
 service:
   loadBalancerIP: ${var.ip}
 persistence:
-  storageClass: ""
+  storageClass: "local-path"
   backup:
-    storageClass: ""
+    storageClass: "local-path"
 resources:
   requests:
     cpu: 100m
