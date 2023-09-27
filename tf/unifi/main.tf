@@ -17,21 +17,21 @@ image:
   registry: ${var.image_registry}
   repository: ${var.image_repository}
   tag: ${var.image_version}
-  env:
-    TZ: ${var.timezone}
-  service:
-    loadBalancerIP: ${var.ip}
-  persistence:
+environment:
+  timezone: ${var.timezone}
+service:
+  loadBalancerIP: ${var.ip}
+persistence:
+  storageClass: ""
+  backup:
     storageClass: ""
-    backup:
-      storageClass: ""
-  resources:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-    limits:
-      cpu: 1
-      memory: 3Gi
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 1
+    memory: 3Gi
 EOT
   ]
 }
