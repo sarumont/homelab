@@ -37,3 +37,8 @@ variable namespace {
 variable ip {
   description = "IP to use for the Unifi Controller service"
 }
+
+variable storage_class {
+  description = "Storage class to use for PVCs"
+  default = "local-path"
+}
