@@ -2,7 +2,9 @@ version: '3'
 services:
   lms:
     container_name: lms
+    hostname: ${HOST}
     image: lmscommunity/logitechmediaserver:8.4.0
+    pull_policy: always
     volumes:
       - ~/.docker/lms/config:/config:rw
       - ${MUSIC_DIR}:/music:ro
@@ -20,7 +22,7 @@ services:
     restart: unless-stopped
   pihole:
     container_name: pihole
-    image: pihole/pihole:latest
+    image: pihole/pihole:2023.10.0
     ports:
       - 53:53/tcp
       - 53:53/udp
