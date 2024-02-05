@@ -26,7 +26,8 @@ auth:
   rootPassword: ${random_password.root_password.result}
 primary:
   service:
-    type: NodePort
+    type: ${var.service_type}
+    # used for NodePort, ignored for others
     nodePorts:
       mysql:
         32306

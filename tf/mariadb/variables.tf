@@ -19,6 +19,16 @@ variable image_version {
   default = "10.10.6"
 }
 
+variable service_type {
+  description = "Type of service to use"
+  default = "ClusterIP"
+
+  validation {
+    condition     = contains(["ClusterIP", "NodePort", "LoadBalancer"], var.service_type)
+    error_message = "Allowed values for service_type are \"ClusterIP\", \"NodePort\", or \"LoadBalancer\"."
+  }
+}
+
 variable chart_version {
   description = "MariaDB chart version"
   default = "13.1.3"
