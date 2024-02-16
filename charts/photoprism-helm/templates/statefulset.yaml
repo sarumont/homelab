@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "photoprism.fullname" . }}
+  labels:
+{{ include "photoprism.labels" . | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "photoprism.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  serviceName: {{ include "photoprism.fullname" . }}
+  replicas: {{ .Values.replicaCount | default 1 }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "photoprism.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      {{- with .Values.securityContext }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: 5
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
+      containers:
+      - name: photoprism
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        envFrom:
+        - configMapRef:
+            name: environment
+        - configMapRef:
+            name: storage
+        {{- if or (not .Values.existingSecret) (not .Values.database.existingSecret) }}
+        - secretRef:
+            name: credentials
+        {{- end }}
+        {{- if .Values.existingSecret }}
+        - secretRef:
+            name: {{ .Values.existingSecret }}
+        {{- end }}
+        {{- if and .Values.database.existingSecret (ne (default "" .Values.existingSecret) (default "" .Values.database.existingSecret)) }}
+        - secretRef:
+            name: {{ .Values.database.existingSecret }}
+        {{- end }}
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+        resources:
+          {{- toYaml .Values.resources | nindent 12 }}
+        ports:
+        - containerPort: 2342
+          name: http
+        volumeMounts:
+          {{- toYaml .Values.persistence.volumeMounts | nindent 8 }}
+    {{- if .Values.sidecarContainers }}
+    {{- toYaml .Values.sidecarContainers | nindent 6 }}
+    {{- end }}
+    {{- if and .Values.persistence.enabled .Values.persistence.volumes }}
+      volumes:
+      {{- toYaml .Values.persistence.volumes | nindent 6 }}
+    {{ else if eq .Values.persistence.enabled false }}
+      volumes:
+      - name: storage
+        emptyDir: {}
+      - name: originals
+        emptyDir: {}
+    {{- end }}
+{{- if and .Values.persistence.enabled .Values.persistence.volumeClaimTemplates }}
+  volumeClaimTemplates:
+    {{- toYaml .Values.persistence.volumeClaimTemplates | nindent 2 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
