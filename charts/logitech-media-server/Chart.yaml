@@ -1,0 +1,14 @@
+apiVersion: v2
+name: lms-controller
+description: A Helm chart for deploying LMS on Kubernetes
+type: application
+version: 1.0.0
+keywords:
+  - lms
+  - logitech
+home: https://github.com/sarumont/homelab/charts/logitech-media-server
+appVersion: "v8.4.0"
+maintainers:
+  - name: Richard Kolkovich
+    email: richard@sigil.org
+    url: https://sigil.org
