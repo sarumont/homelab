@@ -60,6 +60,7 @@ resource "helm_release" "photoprism" {
 image:
   tag: ${var.image_version}
 ingress:
+  className: ${var.ingress_class_name}
   enabled: true
   tls: []
 config:

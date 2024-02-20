@@ -5,7 +5,7 @@ variable "timezone" {
 
 variable "chart_version" {
   description = "Version of the Photoprism Helm chart to use"
-  default = "0.1.0"
+  default = "0.2.0"
 }
 
 variable "image_version" {
@@ -16,6 +16,11 @@ variable "image_version" {
 variable "ingress_hosts" {
   description = "Hostnames to configure for ingress matching"
   type = list(string)
+}
+
+variable "ingress_class_name" {
+  description = "Class name of the Ingress to configure"
+  default = "default"
 }
 
 variable "site_url" {
