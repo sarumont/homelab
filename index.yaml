@@ -3,6 +3,18 @@ entries:
   photoprism:
   - apiVersion: v1
     appVersion: "20190703"
+    created: "2024-02-20T15:18:12.681369571Z"
+    description: A Photoprism Helm chart for Kubernetes
+    digest: 1dc2b51b775f442ea3f163d53266f5712a7b197a9327601b09db304eb2e992c8
+    home: https://photoprism.org/
+    name: photoprism
+    sources:
+    - https://github.com/photoprism/photoprism
+    urls:
+    - https://github.com/sarumont/homelab/releases/download/photoprism-0.2.0/photoprism-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v1
+    appVersion: "20190703"
     created: "2024-02-16T20:21:24.035433542Z"
     description: A Photoprism Helm chart for Kubernetes
     digest: a019a64605f1d51c2fbe5cc2df1d11906f1224fbf5c9579c71ed1b6b2c97c26c
@@ -33,4 +45,4 @@ entries:
     urls:
     - https://github.com/sarumont/homelab/releases/download/unifi-controller-1.1.0/unifi-controller-1.1.0.tgz
     version: 1.1.0
-generated: "2024-02-16T20:21:24.035439172Z"
+generated: "2024-02-20T15:18:12.68137971Z"
