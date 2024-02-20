@@ -1,0 +1,67 @@
+variable "timezone" {
+  description = "Timezone to use for various services"
+  default = "America/Denver"
+}
+
+variable "chart_version" {
+  description = "Version of the Photoprism Helm chart to use"
+  default = "0.1.0"
+}
+
+variable "image_version" {
+  description = "Version of the Photoprism docker image use"
+  default = "231021"
+}
+
+variable "ingress_hosts" {
+  description = "Hostnames to configure for ingress matching"
+  type = list(string)
+}
+
+variable "site_url" {
+  description = "URL for public access to Photoprism"
+  default = "http://photoprism.me:2342"
+}
+
+variable "nfs_server" {
+  description = "NFS server to use for image storage"
+}
+
+variable "storage_path" {
+  description = "Path to mount for Photoprism storage"
+}
+
+variable "originals_path" {
+  description = "Path to mount for Photoprism originals storage"
+}
+
+variable "imports_path" {
+  description = "Path to mount for Photoprism imports"
+}
+
+variable "namespace" {
+  description = "Namespace to deploy in"
+  default = "photoprism"
+}
+
+variable "provider_db_addr" {
+  description = "Address to connect to the MySQL DB for the provider"
+}
+
+variable "db_root_password" {
+  description = "Root password to the database for provisioning a new DB"
+}
+
+variable "db_addr" {
+  description = "Address to connect to the MySQL DB for the service"
+}
+
+variable "db_name" {
+  description = "Name of the DB to create for this instance of Photoprism"
+  default = "photoprism"
+}
+
+variable "db_user" {
+  description = "Name of the DB user to create for this instance of Photoprism"
+  default = "photoprism"
+}
