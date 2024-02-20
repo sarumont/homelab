@@ -68,6 +68,7 @@ service:
   port: 80
 
 ingress:
+  className: default
   enabled: false
   hosts:
   - host: my.domain.com
