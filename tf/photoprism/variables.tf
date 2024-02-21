@@ -5,7 +5,7 @@ variable "timezone" {
 
 variable "chart_version" {
   description = "Version of the Photoprism Helm chart to use"
-  default = "0.2.0"
+  default = "0.2.1"
 }
 
 variable "image_version" {
