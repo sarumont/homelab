@@ -28,6 +28,13 @@ resource "helm_release" "radarr" {
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
+      name  = "persistence.${set.value.name}.mountPath"
+      value = "/media/${set.value.name}"
+    }
+  }
+  dynamic "set" {
+    for_each = {for idx, val in var.nfs_volumes: idx => val}
+    content {
       name  = "persistence.${set.value.name}.path"
       value = "${set.value.path}"
     }
