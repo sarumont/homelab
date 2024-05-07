@@ -73,7 +73,10 @@ service:
 workload:
   exportarr:
     enabled: false
-
+  main:
+    podSpec:
+      securityContext:
+        fsGroup: 1000
 EOT
   ]
 }
