@@ -14,28 +14,28 @@ resource "helm_release" "radarr" {
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
-      name  = "persistence.${set.key}.${set.value.name}.enabled"
+      name  = "persistence.${set.value.name}.enabled"
       value = true
     }
   }
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
-      name  = "persistence.${set.key}.${set.value.name}.type"
+      name  = "persistence.${set.value.name}.type"
       value = "nfs"
     }
   }
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
-      name  = "persistence.${set.key}.${set.value.name}.path"
+      name  = "persistence.${set.value.name}.path"
       value = "${set.value.path}"
     }
   }
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
-      name  = "persistence.${set.key}.${set.value.name}.server"
+      name  = "persistence.${set.value.name}.server"
       value = "${set.value.server}"
     }
   }
