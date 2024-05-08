@@ -1,15 +1,9 @@
-resource "kubernetes_namespace" "ns" {
-  metadata {
-    name = var.namespace
-  }
-}
-
 resource "helm_release" "radarr" {
   name       = "radarr"
   repository = "https://charts.truecharts.org"
   chart      = "radarr"
   version    = var.chart_version
-  namespace  = kubernetes_namespace.ns.metadata.0.name
+  namespace  = var.namespace
 
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
