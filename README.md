@@ -7,6 +7,9 @@ This consists of several services including (but not limited to):
  - Photoprism
  - Logitech Media Server (LMS)
  - Unifi Controller
+ - Media organization:
+    - Radarr
+    - Sonarr
 
 I consider this lab a production environment, as it runs services which my family relies upon (namely, Photoprism).
 
