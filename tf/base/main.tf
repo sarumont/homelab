@@ -60,6 +60,9 @@ resource "helm_release" "ingress_nginx" {
 
   values = [
 <<EOT
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
 controller:
   service:
     enableHttps: false
