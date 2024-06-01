@@ -60,6 +60,9 @@ resource "helm_release" "photoprism" {
 image:
   tag: ${var.image_version}
 ingress:
+  metadata:
+    annotations:
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
   className: ${var.ingress_class_name}
   enabled: true
   tls: []
