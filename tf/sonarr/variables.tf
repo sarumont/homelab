@@ -10,7 +10,7 @@ variable "namespace" {
 
 variable "chart_version" {
   description = "Version of the sonarr Helm chart to use"
-  default = "22.0.10"
+  default = "23.1.1"
 }
 
 variable "cluster_domain" {

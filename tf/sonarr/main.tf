@@ -1,6 +1,6 @@
 resource "helm_release" "sonarr" {
   name       = "sonarr"
-  repository = "https://charts.truecharts.org"
+  repository = "oci://tccr.io/truecharts"
   chart      = "sonarr"
   version    = var.chart_version
   namespace  = var.namespace

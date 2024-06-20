@@ -1,6 +1,6 @@
 resource "helm_release" "radarr" {
   name       = "radarr"
-  repository = "https://charts.truecharts.org"
+  repository = "oci://tccr.io/truecharts"
   chart      = "radarr"
   version    = var.chart_version
   namespace  = var.namespace

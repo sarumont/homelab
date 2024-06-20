@@ -10,7 +10,7 @@ variable "namespace" {
 
 variable "chart_version" {
   description = "Version of the Radarr Helm chart to use"
-  default = "22.2.4"
+  default = "23.1.1"
 }
 
 variable "cluster_domain" {
