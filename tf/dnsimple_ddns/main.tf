@@ -1,6 +1,6 @@
 resource "kubernetes_secret" "dnsimple_creds" {
   metadata {
-    name = "dnsimple_creds"
+    name = "dnsimple-creds"
   }
 
   data = {
@@ -30,14 +30,14 @@ resource "kubernetes_cron_job" "dnsimple_ddns" {
           metadata {}
           spec {
             container {
-              env_from = {
-                secret_ref = {
-                  name = dnsimple_creds
-                }
-              }
               name    = "dnsimple_ddns"
               image   = "docker.io/sarumont/dddns:latest"
               command = ["/root/dddns"]
+              env_from = {
+                secret_ref = {
+                  name = dnsimple-creds
+                }
+              }
             }
           }
         }
