@@ -3,11 +3,6 @@ variable "timezone" {
   default = "America/Denver"
 }
 
-variable "namespace" {
-  description = "Namespace to deploy in"
-  default = "tortuga"
-}
-
 variable "chart_version" {
   description = "Version of the Radarr Helm chart to use"
   default = "23.1.1"
