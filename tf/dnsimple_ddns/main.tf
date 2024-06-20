@@ -13,9 +13,9 @@ resource "kubernetes_secret" "dnsimple_creds" {
   type = "opaque"
 }
 
-resource "kubernetes_cron_job" "dnsimple_ddns" {
+resource "kubernetes_cron_job_v1" "dnsimple_ddns" {
   metadata {
-    name = "dnsimple_ddns"
+    name = "dnsimple-ddns"
   }
   spec {
     failed_jobs_history_limit     = 5
@@ -30,12 +30,12 @@ resource "kubernetes_cron_job" "dnsimple_ddns" {
           metadata {}
           spec {
             container {
-              name    = "dnsimple_ddns"
+              name    = "dnsimple-ddns"
               image   = "docker.io/sarumont/dddns:latest"
               command = ["/root/dddns"]
-              env_from = {
-                secret_ref = {
-                  name = dnsimple-creds
+              env_from { 
+                secret_ref { 
+                    name = kubernetes_secret.dnsimple_creds.metadata.0.name
                 }
               }
             }
