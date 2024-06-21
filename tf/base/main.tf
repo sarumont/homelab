@@ -167,18 +167,29 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
   chart_version = "1.15.0"
-  cluster_issuer_email                   = "admin@sigil.org"
-  cluster_issuer_name                    = "cert-manager-global"
-  cluster_issuer_private_key_secret_name = "cert-manager-private-key"
-  solvers = [
-    {
-      http01 = {
-        ingress = {
-          class = "nginx-external"
-          ingressClassName = "nginx-external"
-        }
-      }
-    }
+  cluster_issuer_email                   = var.issuer_email
+}
+
+resource "helm_release" "cert-manager-dnsimple" {
+  name       = "cert-manager-webhook-dnsimple"
+  repository = "https://puzzle.github.io/cert-manager-webhook-dnsimple"
+  chart      = "cert-manager-webhook-dnsimple"
+  version    = "0.1.3"
+  namespace  = "cert-manager"
+
+  values = [
+<<EOT
+groupName: ${var.issuer_group_name}
+dnsimple:
+  token: ${var.dnsimple_token}
+  accountID: ${var.dnsimple_account}
+clusterIssuer:
+  email: ${var.issuer_email}
+  production:
+    enabled: true
+  staging:
+    enabled: true
+EOT
   ]
 }
 
@@ -215,7 +226,7 @@ resource "kubernetes_ingress_v1" "hello_world_ingress_external" {
   metadata {
     name = "hello-world-ingress-external"
     annotations = {
-      "cert-manager.io/cluster-issuer" = "cert-manager-global"
+      "cert-manager.io/cluster-issuer" = "cert-manager-webhook-dnsimple-production"
     }
   }
   wait_for_load_balancer = true

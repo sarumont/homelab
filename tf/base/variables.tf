@@ -31,3 +31,20 @@ variable "external_ingress_ip" {
 variable "lb_pool" {
   description = "IP address Pool to use for load balancer"
 }
+
+variable "dnsimple_token" {
+  description = "DNSimple access token"
+  sensitive = true
+}
+
+variable "dnsimple_account" {
+  description = "DNSimple account ID"
+}
+
+variable "issuer_email" {
+  description = "Cluster issuer email"
+}
+
+variable "issuer_group_name" {
+  description = "Group name to use for the DNSimple webhook issuer"
+}
