@@ -167,6 +167,15 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
   cluster_issuer_email                   = "admin@sigil.org"
+  solvers = [
+    {
+      http01 = {
+        ingress = {
+          class = "nginx-external"
+        }
+      }
+    }
+  ]
 }
 
 # NFD
