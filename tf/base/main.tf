@@ -69,6 +69,35 @@ EOT
   ]
 }
 
+# Nginx ingress -- external traffic
+resource "kubernetes_namespace" "ingress_nginx_external" {
+  metadata {
+    name = "ingress-nginx-external"
+  }
+}
+
+resource "helm_release" "ingress_nginx_external" {
+  name       = "ingress-nginx-external"
+  repository = "https://kubernetes.github.io/ingress-nginx"
+  chart      = "ingress-nginx"
+  version    = var.nginx_chart_version
+  namespace  = kubernetes_namespace.ingress_nginx_external.metadata.0.name
+
+  values = [
+<<EOT
+controller:
+  service:
+    enableHttps: true
+    internal:
+      loadBalancerIP: ${var.external_ingress_ip}
+  ingressClassResource:
+    name: nginx-external
+    controllerValue: k8s.io/ingress-nginx-external
+  ingressClass: nginx-external
+EOT
+  ]
+}
+
 # Persistent storage via NFS
 resource "helm_release" "nfs_pvc" {
   name = "nfs-subdir-external-provisioner"
@@ -137,7 +166,6 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 # cert-manager
 module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
-
   cluster_issuer_email                   = "admin@sigil.org"
 }
 

@@ -21,7 +21,11 @@ variable "nfs_path" {
 }
 
 variable "ingress_ip" {
-  description = "IP address to request for the ingress"
+  description = "IP address to request for the ingress controller"
+}
+
+variable "external_ingress_ip" {
+  description = "IP address to request for the external ingress controller"
 }
 
 variable "lb_pool" {
