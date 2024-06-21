@@ -192,3 +192,48 @@ resource "helm_release" "nfd" {
   version    = var.nfd_chart_version
   namespace  = kubernetes_namespace.nfd_ns.metadata.0.name
 }
+
+# external hello world
+resource "helm_release" "hello_world_external" {
+  name       = "hello-world-external"
+  repository = "https://cloudecho.github.io/charts/"
+  chart      = "hello"
+  version    = "0.1.2"
+  namespace  = "default"
+
+  set {
+    name = "ingress.enabled"
+    value = false
+  }
+}
+
+resource "kubernetes_ingress_v1" "hello_world_ingress_external" {
+  metadata {
+    name = "hello-world-ingress-external"
+  }
+  wait_for_load_balancer = true
+
+  spec {
+    ingress_class_name = "nginx-external"
+    rule {
+      host = "co.ddns.sigil.org" # test value
+      http {
+        path {
+          backend {
+            service {
+              name = "hello-world-external"
+              port {
+                number = 8080
+              }
+            }
+          }
+          path = "/"
+        }
+      }
+    }
+    tls {
+      secret_name = "hello-tls-secret"
+    }
+  }
+}
+
