@@ -166,7 +166,7 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 # cert-manager
 module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
-  chart_version = 1.15.0
+  chart_version = "1.15.0"
   cluster_issuer_email                   = "admin@sigil.org"
   cluster_issuer_name                    = "cert-manager-global"
   cluster_issuer_private_key_secret_name = "cert-manager-private-key"
