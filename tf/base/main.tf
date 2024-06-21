@@ -213,7 +213,7 @@ resource "kubernetes_ingress_v1" "hello_world_ingress_external" {
   metadata {
     name = "hello-world-ingress-external"
     annotations {
-      "cert-manager.io/issuer" = "cert-manager-global"
+      cert-manager.io/issuer = "cert-manager-global"
     }
   }
   wait_for_load_balancer = true
