@@ -175,6 +175,7 @@ module "cert_manager" {
       http01 = {
         ingress = {
           class = "nginx-external"
+          ingressClassName = "nginx-external"
         }
       }
     }
