@@ -32,7 +32,6 @@ resource "kubernetes_cron_job_v1" "dnsimple_ddns" {
             container {
               name    = "dnsimple-ddns"
               image   = "docker.io/sarumont/dddns:v0.1.2"
-              command = ["/root/dddns"]
               env_from { 
                 secret_ref { 
                     name = kubernetes_secret.dnsimple_creds.metadata.0.name
