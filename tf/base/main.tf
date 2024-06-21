@@ -167,6 +167,8 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
   cluster_issuer_email                   = "admin@sigil.org"
+  cluster_issuer_name                    = "cert-manager-global"
+  cluster_issuer_private_key_secret_name = "cert-manager-private-key"
   solvers = [
     {
       http01 = {
@@ -210,6 +212,9 @@ resource "helm_release" "hello_world_external" {
 resource "kubernetes_ingress_v1" "hello_world_ingress_external" {
   metadata {
     name = "hello-world-ingress-external"
+    annotations {
+      "cert-manager.io/issuer" = "cert-manager-global"
+    }
   }
   wait_for_load_balancer = true
 
