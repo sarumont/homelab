@@ -232,6 +232,9 @@ resource "kubernetes_ingress_v1" "hello_world_ingress_external" {
       }
     }
     tls {
+      hosts = [
+        "co.ddns.sigil.org"
+      ]
       secret_name = "hello-tls-secret"
     }
   }
