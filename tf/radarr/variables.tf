@@ -28,15 +28,6 @@ variable "nfs_volumes" {
   )
 }
 
-variable "dnsimple_token" {
-  description = "DNSimple access token"
-  sensitive = true
-}
-
-variable "dnsimple_account" {
-  description = "DNSimple account ID"
-}
-
 variable "dnsimple_domain" {
   description = "Base domain under which to create DNSimple records"
 }
