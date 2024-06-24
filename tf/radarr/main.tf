@@ -4,6 +4,21 @@ resource "kubernetes_namespace" "ns" {
   }
 }
 
+# Configure the DNSimple provider
+provider "dnsimple" {
+  token = "${var.dnsimple_token}"
+  account = "${var.dnsimple_account}"
+}
+
+# Add a record to a sub-domain
+resource "dnsimple_zone_record" "foobar" {
+  zone_name = "${var.dnsimple_domain}"
+  name   = "radarr"
+  value  = "${var.domain_cname_target}"
+  type   = "${var.dnsimple_record_type}"
+  ttl    = "${var.dnsimple_record_ttl}"
+}
+
 resource "helm_release" "radarr" {
   name       = "radarr"
   repository = "oci://tccr.io/truecharts"
