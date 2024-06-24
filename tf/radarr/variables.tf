@@ -41,6 +41,11 @@ variable "dnsimple_domain" {
   description = "Base domain under which to create DNSimple records"
 }
 
+variable "dnsimple_record_name" {
+  description = "Name of the DNSimple domain name"
+  default = "radarr"
+}
+
 variable "dnsimple_record_target" {
   description = "Target to point domain names to"
 }
