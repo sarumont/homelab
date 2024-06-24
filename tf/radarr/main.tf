@@ -7,7 +7,7 @@ resource "kubernetes_namespace" "ns" {
 # Add a record to a sub-domain
 resource "dnsimple_zone_record" "radarr_cname" {
   zone_name = "${var.dnsimple_domain}"
-  name      = "radarr"
+  name      = "${var.dnsimple_record_name}"
   value     = "${var.dnsimple_record_target}"
   type      = "${var.dnsimple_record_type}"
   ttl       = "${var.dnsimple_record_ttl}"
@@ -66,6 +66,9 @@ ingress:
     ingressClassName: ${var.ingress_class}
     hosts:
       - host: radarr.${var.cluster_domain}
+        paths:
+          - path: "/"
+      - host: ${var.dnsimple_record_name}.${var.dnsimple_domain}
         paths:
           - path: "/"
     integrations:
