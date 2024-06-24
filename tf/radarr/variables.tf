@@ -41,7 +41,7 @@ variable "dnsimple_domain" {
   description = "Base domain under which to create DNSimple records"
 }
 
-variable "dnsimple_domain_target" {
+variable "dnsimple_record_target" {
   description = "Target to point domain names to"
 }
 

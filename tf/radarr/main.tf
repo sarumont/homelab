@@ -11,12 +11,12 @@ provider "dnsimple" {
 }
 
 # Add a record to a sub-domain
-resource "dnsimple_zone_record" "foobar" {
+resource "dnsimple_zone_record" "radarr_cname" {
   zone_name = "${var.dnsimple_domain}"
-  name   = "radarr"
-  value  = "${var.domain_cname_target}"
-  type   = "${var.dnsimple_record_type}"
-  ttl    = "${var.dnsimple_record_ttl}"
+  name      = "radarr"
+  value     = "${var.dnsimple_record_target}"
+  type      = "${var.dnsimple_record_type}"
+  ttl       = "${var.dnsimple_record_ttl}"
 }
 
 resource "helm_release" "radarr" {
