@@ -59,3 +59,5 @@ I started down the path of using NFS for the default `storageClass`, but that is
 1. back up important things via external means (i.e. - database backups, etc.)
 
 This allows me to use node-local storage for the pod PVCs, NFS for shared resources (i.e. Plex libraries), and avoid problems with SQLite over NFS.
+
+In your `infra` repo, the K8s and DNSimple providers must be configured.

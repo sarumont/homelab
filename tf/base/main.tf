@@ -69,12 +69,6 @@ EOT
   ]
 }
 
-# Configure the DNSimple provider
-provider "dnsimple" {
-  token = "${var.dnsimple_token}"
-  account = "${var.dnsimple_account}"
-}
-
 # Create a record for the internal ingress controller
 resource "dnsimple_zone_record" "ingress" {
   zone_name = "${var.dnsimple_domain}"

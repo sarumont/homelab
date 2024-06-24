@@ -4,12 +4,6 @@ resource "kubernetes_namespace" "ns" {
   }
 }
 
-# Configure the DNSimple provider
-provider "dnsimple" {
-  token = "${var.dnsimple_token}"
-  account = "${var.dnsimple_account}"
-}
-
 # Add a record to a sub-domain
 resource "dnsimple_zone_record" "radarr_cname" {
   zone_name = "${var.dnsimple_domain}"
