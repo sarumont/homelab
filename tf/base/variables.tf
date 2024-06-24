@@ -41,6 +41,15 @@ variable "dnsimple_account" {
   description = "DNSimple account ID"
 }
 
+variable "dnsimple_domain" {
+  description = "Base domain under which to create DNSimple records"
+}
+
+variable "dnsimple_record_ttl" {
+  description = "TTL for DNS record"
+  default = 3600
+}
+
 variable "issuer_email" {
   description = "Cluster issuer email"
 }

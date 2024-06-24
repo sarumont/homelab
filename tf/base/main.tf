@@ -69,6 +69,21 @@ EOT
   ]
 }
 
+# Configure the DNSimple provider
+provider "dnsimple" {
+  token = "${var.dnsimple_token}"
+  account = "${var.dnsimple_account}"
+}
+
+# Create a record for the internal ingress controller
+resource "dnsimple_zone_record" "ingress" {
+  zone_name = "${var.dnsimple_domain}"
+  name      = "internal"
+  value     = "${var.ingress_ip}"
+  type      = "A"
+  ttl       = "${var.dnsimple_record_ttl}"
+}
+
 # Nginx ingress -- external traffic
 resource "kubernetes_namespace" "ingress_nginx_external" {
   metadata {
