@@ -72,7 +72,7 @@ EOT
 # Create a record for the internal ingress controller
 resource "dnsimple_zone_record" "ingress" {
   zone_name = "${var.dnsimple_domain}"
-  name      = "internal"
+  name      = "${var.dnsimple_internal_ingress_record}"
   value     = "${var.ingress_ip}"
   type      = "A"
   ttl       = "${var.dnsimple_record_ttl}"
