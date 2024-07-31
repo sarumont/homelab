@@ -1,16 +1,26 @@
-variable "timezone" {
-  description = "Timezone to use for various services"
-  default = "America/Denver"
-}
-
 variable "namespace" {
   description = "Namespace to deploy in"
   default = "lms"
 }
 
+variable "hostname" {
+  description = "Hostname to use"
+  default = "lms"
+}
+
 variable "chart_version" {
   description = "Version of the LMS Helm chart to use"
-  default = "12.0.9"
+  default = "13.1.4"
+}
+
+variable "timezone" {
+  description = "Timezone to use for various services"
+  default = "America/Denver"
+}
+
+variable "hostname" {
+  description = "Hostname to use for the service"
+  default = "lms"
 }
 
 variable "cluster_domain" {
@@ -22,6 +32,11 @@ variable "ingress_class" {
   default = "nginx"
 }
 
+variable "namespace" {
+  description = "Namespace to deploy in"
+  default = "lms"
+}
+
 variable "nfs_volumes" {
   description = "NFS volumes to mount"
   type = list(
@@ -29,6 +44,30 @@ variable "nfs_volumes" {
       name   = string,
       server = string,
       path   = string,
+      prefix = string,
     })
   )
+}
+
+variable "dnsimple_domain" {
+  description = "Base domain under which to create DNSimple records"
+}
+
+variable "dnsimple_record_name" {
+  description = "Name of the DNSimple domain name"
+  default = "lms"
+}
+
+variable "dnsimple_record_target" {
+  description = "Target to point domain names to"
+}
+
+variable "dnsimple_record_type" {
+  description = "Type of DNS record to create"
+  default = "CNAME"
+}
+
+variable "dnsimple_record_ttl" {
+  description = "TTL for DNS record"
+  default = 3600
 }
