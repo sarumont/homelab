@@ -18,11 +18,6 @@ variable "timezone" {
   default = "America/Denver"
 }
 
-variable "hostname" {
-  description = "Hostname to use for the service"
-  default = "lms"
-}
-
 variable "cluster_domain" {
   description = "Domain name for the cluster"
 }
@@ -30,11 +25,6 @@ variable "cluster_domain" {
 variable "ingress_class" {
   description = "Ingress class name to use"
   default = "nginx"
-}
-
-variable "namespace" {
-  description = "Namespace to deploy in"
-  default = "lms"
 }
 
 variable "nfs_volumes" {

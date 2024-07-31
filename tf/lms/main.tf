@@ -1,7 +1,6 @@
 # Add a record to a sub-domain
 resource "dnsimple_zone_record" "lms_cname" {
-  create_if = var.dnsimple_domain != null
-
+  count     = var.dnsimple_domain != null ? 1 : 0
   zone_name = "${var.dnsimple_domain}"
   name      = "${var.dnsimple_record_name}"
   value     = "${var.dnsimple_record_target}"
@@ -56,7 +55,7 @@ resource "helm_release" "lms" {
   values = [
 <<EOT
 image:
-  pullPolicy: always
+  pullPolicy: Always
 ingress:
   lms:
     enabled: true
@@ -67,13 +66,11 @@ ingress:
       - host: ${var.hostname}.${var.cluster_domain}
         paths:
           - path: "/"
-
-    %{ if var.dnsimple_record_name} != null }
+    %{ if var.dnsimple_record_name != null }
       - host: ${var.dnsimple_record_name}.${var.dnsimple_domain}
         paths:
           - path: "/"
     %{ endif }
-
     integrations:
       traefik:
         enabled: false
