@@ -3,7 +3,7 @@ resource "dnsimple_zone_record" "lms_cname" {
   count     = var.dnsimple_domain != null ? 1 : 0
   zone_name = "${var.dnsimple_domain}"
   name      = "${var.dnsimple_record_name}"
-  value     = "${var.dnsimple_record_target}"
+  value     = "${var.ip}"
   type      = "${var.dnsimple_record_type}"
   ttl       = "${var.dnsimple_record_ttl}"
 }
@@ -56,6 +56,38 @@ resource "helm_release" "lms" {
 <<EOT
 image:
   pullPolicy: Always
+service:
+  main:
+    type: LoadBalancer
+    loadBalancerIP: ${var.ip}
+  playertcp:
+    type: LoadBalancer
+    loadBalancerIP: ${var.ip}
+  playerudp:
+    type: LoadBalancer
+    loadBalancerIP: ${var.ip}
+  cli:
+    type: LoadBalancer
+    loadBalancerIP: ${var.ip}
+  playerupnptcp:
+    type: LoadBalancer
+    loadBalancerIP: ${var.ip}
+    enabled: true
+    ports:
+      playerupnptcp:
+        enabled: true
+        port: 49152
+        targetPort: 49152
+  playerupnpudp:
+    type: LoadBalancer
+    loadBalancerIP: ${var.ip}
+    enabled: true
+    ports:
+      playerupnpudp:
+        enabled: true
+        port: 49152
+        targetPort: 49152
+        protocol: udp
 ingress:
   lms:
     enabled: true
