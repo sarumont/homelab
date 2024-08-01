@@ -1,4 +1,3 @@
-version: '3'
 services:
   lms:
     container_name: lms
@@ -9,39 +8,11 @@ services:
     volumes:
       - ~/.docker/lms/config:/config:rw
       - ${MUSIC_DIR}:/music:ro
-      - ${PLAYLIST_DIR}:/playlist:rw
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
     environment:
       PUID: ${PUID}
       PGID: ${PGID}
-  plex:
-    image: plexinc/pms-docker:1.32.2.7100-248a2daf0
-    restart: unless-stopped
-    container_name: plex
-    ports:
-      - 32400:32400/tcp
-      - 3005:3005/tcp
-      - 8324:8324/tcp
-      - 32469:32469/tcp
-      # - 1900:1900/udp
-      - 32410:32410/udp
-      - 32412:32412/udp
-      - 32413:32413/udp
-      - 32414:32414/udp
-    environment:
-      PUID: ${PUID}
-      PGID: ${PGID}
-      TZ: ${TIMEZONE}
-      HOSTNAME: ${HOST}
-      ADVERTISE_IP: ${PLEX_ADVERTISE_IP}
-    devices:
-     - /dev/dri:/dev/dri
-    volumes:
-      - ${MUSIC_DIR}:/mnt/music
-      - ${TV_DIR}:/mnt/tv
-      - ${MOVIE_DIR}:/mnt/movies
-      - "~/.docker/plex/config:/config"
   pihole:
     container_name: pihole
     image: pihole/pihole:2023.05.2
@@ -56,17 +27,3 @@ services:
       - '~/.docker/pihole/etc:/etc/pihole'
       - '~/.docker/pihole/dnsmasq.d:/etc/dnsmasq.d'
     restart: unless-stopped
-  unifi:
-    container_name: unifi
-    image: jacobalberty/unifi:v7.3.83
-    ports:
-      - 8080:8080/tcp
-      - 8443:8443/tcp
-      - 3478:3478/udp
-      - 6789:6789/udp
-      - 10001:10001/udp
-    user: unifi
-    environment:
-      TZ: ${TIMEZONE}
-    volumes:
-      - '~/.docker/unifi:/unifi'
