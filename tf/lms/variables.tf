@@ -52,9 +52,13 @@ variable "dnsimple_record_name" {
   default = "lms"
 }
 
+variable "dnsimple_record_target" {
+  description = "Target to point domain names to"
+}
+
 variable "dnsimple_record_type" {
   description = "Type of DNS record to create"
-  default = "A"
+  default = "CNAME"
 }
 
 variable "dnsimple_record_ttl" {
