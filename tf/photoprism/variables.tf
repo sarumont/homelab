@@ -18,6 +18,11 @@ variable "ingress_hosts" {
   type = list(string)
 }
 
+variable "tls_hosts" {
+  description = "Hostnames to configure TLS certs for"
+  type = list(string)
+}
+
 variable "ingress_class_name" {
   description = "Class name of the Ingress to configure"
   default = "default"

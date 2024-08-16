@@ -64,6 +64,22 @@ resource "helm_release" "photoprism" {
     }
   }
 
+  dynamic "set" {
+    for_each = var.tls_hosts
+    content {
+      name  = "ingress.tls.hosts[${set.key}]"
+      value = "${set.value}"
+    }
+  }
+
+  dynamic "set" {
+    for_each = var.tls_hosts
+    content {
+      name  = "ingress.tls.hosts[${set.key}].${set.value}.secretName"
+      value = "${set.value}-cert"
+    }
+  }
+
   values = [
 <<EOT
 image:
@@ -71,9 +87,9 @@ image:
 ingress:
   annotations:
     nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    "cert-manager.io/cluster-issuer": "cert-manager-webhook-dnsimple-production"
   className: ${var.ingress_class_name}
   enabled: true
-  tls: []
 config:
   PHOTOPRISM_DEBUG: true
   PHOTOPRISM_READONLY: false
