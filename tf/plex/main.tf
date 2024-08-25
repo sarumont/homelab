@@ -61,6 +61,10 @@ ingress:
 service:
   type: LoadBalancer
   loadBalancerIP: ${var.ip}
+securityContext:
+  # match these to Truecharts' media user
+  runAsUser: 568
+  runAsGroup: 568
 resources: 
     requests: 
         gpu.intel.com/i915: "1" 
