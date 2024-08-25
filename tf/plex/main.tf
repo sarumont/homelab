@@ -6,7 +6,7 @@ resource "kubernetes_namespace" "ns" {
 
 resource "helm_release" "plex" {
   name       = "plex"
-  repository = "https://utkuozdemir.org/helm-charts"
+  repository = "oci://tccr.io/truecharts"
   chart      = "plex"
   version    = var.chart_version
   namespace  = kubernetes_namespace.ns.metadata.0.name
@@ -14,57 +14,47 @@ resource "helm_release" "plex" {
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
-      name  = "extraVolumes[${set.key}].name"
-      value = "${set.value.name}"
+      name  = "persistence.${set.value.name}.enabled"
+      value = true
     }
   }
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
-      name  = "extraVolumes[${set.key}].nfs.server"
-      value = "${set.value.server}"
+      name  = "persistence.${set.value.name}.type"
+      value = "nfs"
     }
   }
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
-      name  = "extraVolumes[${set.key}].nfs.path"
+      name  = "persistence.${set.value.name}.mountPath"
+      value = "/media/${set.value.name}"
+    }
+  }
+  dynamic "set" {
+    for_each = {for idx, val in var.nfs_volumes: idx => val}
+    content {
+      name  = "persistence.${set.value.name}.path"
       value = "${set.value.path}"
     }
   }
-
   dynamic "set" {
     for_each = {for idx, val in var.nfs_volumes: idx => val}
     content {
-      name  = "extraVolumeMounts[${set.key}].name"
-      value = "${set.value.name}"
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "extraVolumeMounts[${set.key}].mountPath"
-      value = "/media/${set.value.name}"
+      name  = "persistence.${set.value.name}.server"
+      value = "${set.value.server}"
     }
   }
 
   values = [
 <<EOT
-env: 
-  TZ: ${var.timezone}
-  ADVERTISE_IP: http://${var.ip}:32400
-image:
-  repository: docker.io/plexinc/pms-docker
-  tag: ${var.image_version}
-ingress:
-  enabled: false
+plex:
+  serverIP: ${var.ip}
 service:
-  type: LoadBalancer
-  loadBalancerIP: ${var.ip}
-securityContext:
-  # match these to Truecharts' media user
-  runAsUser: 568
-  runAsGroup: 568
+  main:
+    type: LoadBalancer
+    loadBalancerIP: ${var.ip}
 resources: 
     requests: 
         gpu.intel.com/i915: "1" 
