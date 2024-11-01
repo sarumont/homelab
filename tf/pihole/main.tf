@@ -35,6 +35,9 @@ resource "helm_release" "pihole" {
 
   values = [
 <<EOT
+image:
+  tag: ${var.image_version}
+
 extraEnvVars: 
   TZ: ${var.timezone}
 

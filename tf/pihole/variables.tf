@@ -10,7 +10,7 @@ variable "chart_version" {
 
 variable "image_version" {
   description = "Version of the Pihole docker images to use"
-  default = "2023.05.2"
+  default = "2024.07.0"
 }
 
 variable "ip" {
