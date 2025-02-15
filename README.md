@@ -15,6 +15,57 @@ I consider this lab a production environment, as it runs services which my famil
 
 Terraform modules can be found in [`tf`](./tf) and drive the majority of this setup. I run everything in a 3-node k8s cluster (Thinkcenter m900s). V1 of the lab was split into `docker-compose` and `k8s`, but with V2 I am migrating everything to `k8s` for simplicity. This is still an ongoing process.
 
+# Proxmox
+
+Leveraging Proxmox to further simplify and automate my lab for the current iteration (v2.5?), there are a few things to do manually to set up a Proxmox host.
+
+## Ventoy
+
+If using Ventoy to install, the `linux` line of your grub config may capture Ventoy's ramdisk config, rendering your new Proxmox node unbootable. To resolve this, hit `e` on the Grub entry, scroll down to the `linux=` line, and remove the `rdinit=vtoy/vtoy` bit from the end of that line. Hit `C-x` to save and boot.
+
+Once booted, you'll need to: `rm /etc/default/grub.d/installer.cfg` and run `update-grub`
+
+## VLAN-aware networking
+
+If you use VLANs, make sure to enable VLAN-aware networking for your bridged interface in Proxmox:
+
+1. Select your server.
+2. Go to “Network” in the menu.
+3. Select the Linux bridge (vmbro#).
+4. Click “Edit” at the top of the window.
+5. Check the box that says “VLAN aware”
+6. Press “OK.”
+
+## iGPU passthrough
+
+This has been covered elsewhere, so I will leave a couple links to reference [here](https://www.michaelstinkerings.org/gpu-virtualization-with-intel-12th-gen-igpu-uhd-730/) and [here](https://github.com/Upinel/PVE-Intel-vGPU). Note the steps for installing the DKMS modules on the guests have been wrapped into my `cluster` Terraform module.
+
+## VM Image
+
+Since most of the guides ([1](https://techbythenerd.com/posts/creating-an-ubuntu-cloud-image-in-proxmox/), [2](https://www.norocketscience.at/blog/terraform/deploy-proxmox-virtual-machines-using-cloud-init)) I have been referencing use Ubuntu, I stuck with the Ubuntu Cloud images for this install. To prep a template, you must basically do this:
+
+```sh
+wget https://cloud-images.ubuntu.com/oracular/current/oracular-server-cloudimg-amd64.img
+qm create 9000 --name "ubuntu-2410-cloudinit-template" --memory 2048 --net0 virtio,bridge=vmbr0
+qm importdisk 9000 oracular-server-cloudimg-amd64.img local-lvm
+qm set 9000 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-9000-disk-0
+qm set 9000 --ide2 local-lvm:cloudinit
+qm set 9000 --boot c --bootdisk scsi0
+qm set 9000 --serial0 socket --vga serial0
+qm template 9000
+```
+
+## k3s
+
+The entire purpose of this is to run k8s in the form of k3s on top. I really like [this project](https://github.com/fvumbaca/terraform-proxmox-k3s), save for two things:
+
+1. I don't care about separating `master` and `worker` nodes in my cluster
+2. I need to map the GPU and will eventually want to add multiple NICs for VLAN support on my k8s nodes
+
+Given those constraints, I have shamelessly copied most of @fvumbaca's Terraform into this repo and modified it for my own purposes. Note I also had to bring it up-to-date with the latest version of the Proxmox TF provider.
+
+---- 
+
 # V1 README
 
 Everything below was from the V1 README. I am leaving it in here while I migrate to my V2 config. Some of this will remain but most will disappear.

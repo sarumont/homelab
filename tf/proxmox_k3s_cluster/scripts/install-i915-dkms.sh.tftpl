@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [[ -z "$SRVIO_DKMS_VERSION" ]]; then
+    echo "No SRVIO DKMS module version set - skipping"
+    exit 0
+fi
+
+apt install dkms build-* linux-headers-$(uname -r) linux-modules-extra-$(uname -r)
+
+wget https://github.com/strongtz/i915-sriov-dkms/releases/download/${SRVIO_DKMS_VERSION}/i915-sriov-dkms_${SRVIO_DKMS_VERSION}_amd64.deb
+apt install ./i915-sriov-dkms_${SRVIO_DKMS_VERSION}_amd64.deb
