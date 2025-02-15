@@ -16,7 +16,6 @@ locals {
   mapped_cluster_nodes = {
     for node in local.listed_cluster_nodes : "${node.name}-${node.i}" => node
   }
-
 }
 
 resource "random_password" "k3s-server-token" {
@@ -118,12 +117,23 @@ resource "proxmox_vm_qemu" "k3s-node" {
     ]
   }
 
-  provisioner "file" {
-    destination = "/tmp/install.sh"
-    content = templatefile("${path.module}/scripts/install-i915-dkms.sh.tftpl", {
-      SRVIO_DKMS_VERSION = var.srvio_dkms_version
-    })
+  # update and install guest tools
+  provisioner "remote-exec" {
+    inline = [
+      templatefile("${path.module}/scripts/prepare-vm.sh.tftpl", {})
+    ]
   }
+
+  # add DKMS modules for iGPU passthrough
+  provisioner "file" {
+    inline = [
+      templatefile("${path.module}/scripts/install-i915-dkms.sh.tftpl", {
+        SRVIO_DKMS_VERSION = var.srvio_dkms_version
+      })
+    ]
+  }
+
+
 }
 
 data "external" "kubeconfig" {

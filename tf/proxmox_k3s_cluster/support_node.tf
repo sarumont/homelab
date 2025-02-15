@@ -95,6 +95,14 @@ resource "proxmox_vm_qemu" "k3s-support" {
       "rm -r /tmp/install.sh",
     ]
   }
+
+  # update and install guest tools
+  provisioner "remote-exec" {
+    inline = [
+      templatefile("${path.module}/scripts/prepare-vm.sh.tftpl", {})
+    ]
+  }
+
 }
 
 resource "random_password" "support-db-password" {
