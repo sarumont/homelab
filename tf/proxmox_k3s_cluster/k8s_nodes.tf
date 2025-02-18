@@ -38,7 +38,8 @@ resource "proxmox_vm_qemu" "k3s-node" {
 
   pool = var.proxmox_resource_pool
 
-  # cores = 2
+  machine = "q35"
+  bios    = "seabios"
   cores   = each.value.cores
   sockets = each.value.sockets
   memory  = each.value.memory
@@ -69,6 +70,17 @@ resource "proxmox_vm_qemu" "k3s-node" {
     }
   }
 
+  dynamic "pci" {
+    for_each = each.value.pci_mappings
+    content { 
+      id = pci.key
+      mapping_id = pci.value.mapping_id
+      pcie = pci.value.pcie
+      primary_gpu = pci.value.primary_gpu
+      rombar = pci.value.rombar
+    }
+  }
+
   network {
     id        = 0
     bridge    = each.value.network_bridge
@@ -96,6 +108,13 @@ resource "proxmox_vm_qemu" "k3s-node" {
     host = each.value.ip
   }
 
+  # update and install guest tools
+  provisioner "remote-exec" {
+    inline = [
+      templatefile("${path.module}/scripts/prepare-vm.sh.tftpl", {})
+    ]
+  }
+
   provisioner "remote-exec" {
     inline = [
       templatefile("${path.module}/scripts/install-k3s-server.sh.tftpl", {
@@ -117,23 +136,14 @@ resource "proxmox_vm_qemu" "k3s-node" {
     ]
   }
 
-  # update and install guest tools
-  provisioner "remote-exec" {
-    inline = [
-      templatefile("${path.module}/scripts/prepare-vm.sh.tftpl", {})
-    ]
-  }
-
   # add DKMS modules for iGPU passthrough
-  provisioner "file" {
+  provisioner "remote-exec" {
     inline = [
       templatefile("${path.module}/scripts/install-i915-dkms.sh.tftpl", {
         SRVIO_DKMS_VERSION = var.srvio_dkms_version
       })
     ]
   }
-
-
 }
 
 data "external" "kubeconfig" {

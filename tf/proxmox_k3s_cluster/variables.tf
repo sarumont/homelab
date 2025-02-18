@@ -96,6 +96,14 @@ variable "node_pools" {
     user           = optional(string, "k3s"),
     network_tag    = optional(number, 0),
     network_bridge = optional(string, "vmbr0"),
+
+    // list of PCI ID mappings to use for these VMs
+    pci_mappings   = optional(list(object({
+      mapping_id   = string,
+      pcie         = optional(bool, true)
+      primary_gpu  = optional(bool, false)
+      rombar       = optional(bool, true)
+    })), [])
   }))
 }
 

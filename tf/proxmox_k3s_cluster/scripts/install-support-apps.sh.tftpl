@@ -23,9 +23,9 @@ sudo -E apt install mariadb-server -y
 sudo sed -i -e 's/\(bind-address\s*=\s*\)[0-9.]*/\10.0.0.0/g' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 # Replicate mysql_secure_installation script
-sudo mariadb -e "UPDATE mysql.user SET Password=PASSWORD('$MARIADB_ROOT_PASSWORD') WHERE User='root'"
-sudo mariadb -e "DELETE FROM mysql.user WHERE User=''"
-sudo mariadb -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
+sudo mariadb -e "SET PASSWORD for 'root'@localhost = PASSWORD('$MARIADB_ROOT_PASSWORD')"
+# sudo mariadb -e "DELETE FROM mysql.user WHERE User=''"
+# sudo mariadb -e "DELETE FROM mysql.user WHERE User='root' AND Host NOT IN ('localhost', '127.0.0.1', '::1')"
 sudo mariadb -e "DELETE FROM mysql.db WHERE Db='test' OR Db='test\_%'"
 
 # Setup db and user for k3s
@@ -34,7 +34,7 @@ sudo mariadb -e "CREATE USER IF NOT EXISTS $MARIADB_K3S_USER IDENTIFIED BY '$MAR
 sudo mariadb -e "GRANT ALL ON $MARIADB_K3S_DATABASE.* to $MARIADB_K3S_USER IDENTIFIED BY '$MARIADB_K3S_PASSWORD'"
 
 # Flush and restart db
-sudo mysql -e "FLUSH PRIVILEGES"
+sudo mariadb -e "FLUSH PRIVILEGES"
 sudo systemctl restart mariadb
 
 sudo -E apt install nginx libnginx-mod-stream -y

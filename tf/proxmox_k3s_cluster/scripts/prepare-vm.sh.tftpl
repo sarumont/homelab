@@ -1,4 +1,5 @@
-sudo -E apt upgrade
+sudo -E apt update
+sudo -E apt upgrade -y
 sudo -E apt install qemu-guest-agent -y
 sudo -E systemctl enable --now qemu-guest-agent
 

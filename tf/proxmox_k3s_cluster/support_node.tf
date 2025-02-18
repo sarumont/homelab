@@ -87,7 +87,6 @@ resource "proxmox_vm_qemu" "k3s-support" {
       http_proxy  = var.http_proxy
     })
   }
-
   provisioner "remote-exec" {
     inline = [
       "chmod u+x /tmp/install.sh",
