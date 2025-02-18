@@ -6,6 +6,11 @@ locals {
   lan_subnet_cidr_bitnum = split("/", var.lan_subnet)[1]
 }
 
+resource "proxmox_pool" "k3s-resource-pool" {
+  poolid = var.proxmox_resource_pool
+  comment = "Resource pool for k3s cluster. Managed by Terraform"
+}
+
 resource "proxmox_vm_qemu" "k3s-support" {
   target_node = var.proxmox_node
   name        = join("-", [var.cluster_name, "support"])
