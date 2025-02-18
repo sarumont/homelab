@@ -25,6 +25,10 @@ If using Ventoy to install, the `linux` line of your grub config may capture Ven
 
 Once booted, you'll need to: `rm /etc/default/grub.d/installer.cfg` and run `update-grub`
 
+## Tailscale
+
+I have a [Tailnet](https://tailscale.com) for managing my LAN remotely, so I installed Tailscale on all my Proxmox hosts as per the instructions.
+
 ## VLAN-aware networking
 
 If you use VLANs, make sure to enable VLAN-aware networking for your bridged interface in Proxmox:
@@ -39,6 +43,12 @@ If you use VLANs, make sure to enable VLAN-aware networking for your bridged int
 ## iGPU passthrough
 
 This has been covered elsewhere, so I will leave a couple links to reference [here](https://www.michaelstinkerings.org/gpu-virtualization-with-intel-12th-gen-igpu-uhd-730/) and [here](https://github.com/Upinel/PVE-Intel-vGPU). Note the steps for installing the DKMS modules on the guests have been wrapped into my `cluster` Terraform module.
+
+### Mapping
+
+You will have to map the device as a resource to be able to use this Terraform module to deploy, as Proxmox will not allow raw PCI configuration via API. To do this, head to _Datacenter -> Resource Mappings_ in the Proxmox GUI and hit _Add_. Map your fractionalized GPUs in, giving them a name which you will refer to in your config.
+
+![PCI resource mapping](./pci_device_mapping.png)
 
 ## VM Image
 
