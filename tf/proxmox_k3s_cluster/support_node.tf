@@ -12,6 +12,9 @@ resource "proxmox_pool" "k3s-resource-pool" {
 }
 
 resource "proxmox_vm_qemu" "k3s-support" {
+  depends_on = [
+    proxmox_pool.k3s-resource-pool,
+  ]
   target_node = var.proxmox_node
   name        = join("-", [var.cluster_name, "support"])
 
