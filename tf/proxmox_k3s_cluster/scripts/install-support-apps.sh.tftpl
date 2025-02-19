@@ -12,7 +12,7 @@ export https_proxy="${http_proxy}"
 
 # add mariadb repository
 sudo mv /tmp/mariadb.sources /etc/apt/sources.list.d/
-sudo apt-get install apt-transport-https curl
+sudo -E apt install apt-transport-https curl -y
 sudo mkdir -p /etc/apt/keyrings
 sudo curl -o /etc/apt/keyrings/mariadb-keyring.pgp 'https://mariadb.org/mariadb_release_signing_key.pgp'
 
