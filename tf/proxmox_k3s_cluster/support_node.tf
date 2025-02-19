@@ -25,6 +25,7 @@ resource "proxmox_vm_qemu" "k3s-support" {
   cores   = var.support_node_settings.cores
   sockets = var.support_node_settings.sockets
   memory  = var.support_node_settings.memory
+  onboot  = true
 
   boot    = "order=scsi0" # has to be the same as the OS disk of the template
   scsihw  = "virtio-scsi-single"
@@ -66,6 +67,7 @@ resource "proxmox_vm_qemu" "k3s-support" {
   os_type = "cloud-init"
   cicustom   = "vendor=local:snippets/qemu-guest-agent.yml" # /var/lib/vz/snippets/qemu-guest-agent.yml
   ciuser = var.support_node_settings.user
+  ciupgrade = true
   ipconfig0 = "ip=${local.support_node_ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
   sshkeys = file(var.authorized_keys_file)
   nameserver = var.nameserver

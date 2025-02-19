@@ -39,7 +39,8 @@ resource "proxmox_vm_qemu" "k3s-node" {
   pool = var.proxmox_resource_pool
 
   machine = "q35"
-  bios    = "seabios"
+  bios    = "ovmf"
+  onboot  = true
   cores   = each.value.cores
   sockets = each.value.sockets
   memory  = each.value.memory
@@ -96,6 +97,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
   os_type = "cloud-init"
   cicustom   = "vendor=local:snippets/qemu-guest-agent.yml" # /var/lib/vz/snippets/qemu-guest-agent.yml
   ciuser = each.value.user
+  ciupgrade = true
   ipconfig0 = "ip=${each.value.ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
   sshkeys = file(var.authorized_keys_file)
   nameserver = var.nameserver
@@ -121,7 +123,6 @@ resource "proxmox_vm_qemu" "k3s-node" {
           user     = "k3s"
           password = random_password.k3s-master-db-password.result
         }]
-
         http_proxy  = var.http_proxy
       })
     ]
