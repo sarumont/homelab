@@ -130,9 +130,3 @@ variable "nameserver" {
   type        = string
   description = "nameserver"
 }
-
-variable "srvio_dkms_version" {
-  default = ""
-  type = string
-  description = "Version of the SRVIO DKMS module to install for Intel iGPU passthrough"
-}

@@ -65,6 +65,48 @@ qm set 9000 --serial0 socket --vga serial0
 qm template 9000
 ```
 
+### iGPU template
+
+You will need to further customize the previously-created template for iGPU passthrough. Create a VM from this template, ensuring you set the BIOS to UEFI, machine type to `q35`, and expand the HDD (10GB should be fine).
+
+Finally, install the DKMS module into the VM:
+
+```sh
+export SRVIO_DKMS_VERSION="2025.02.03" # see https://github.com/strongtz/i915-sriov-dkms/releases for the latest. This should match what you installed on the Proxmox host above
+
+sudo -E apt install dkms build-* linux-headers-$(uname -r) linux-modules-extra-$(uname -r) -y
+wget https://github.com/strongtz/i915-sriov-dkms/releases/download/${SRVIO_DKMS_VERSION}/i915-sriov-dkms_${SRVIO_DKMS_VERSION}_amd64.deb
+sudo -E apt install ./i915-sriov-dkms_${SRVIO_DKMS_VERSION}_amd64.deb -y
+
+echo "blacklist xe" | sudo -E tee -a /etc/modprobe.d/blacklist.conf
+echo "options i915 enable_guc=3" | sudo -E tee -a /etc/modprobe.d/i915.conf
+
+sudo -E update-grub
+
+sudo -E apt-get clean \
+&& sudo -E apt -y autoremove --purge \
+&& sudo -E apt -y clean \
+&& sudo -E apt -y autoclean \
+&& sudo -E cloud-init clean \
+&& echo -n | sudo -E tee /etc/machine-id \
+&& echo -n | sudo -E tee /var/lib/dbus/machine-id \
+&& sudo -E sync \
+&& history -c \
+&& history -w \
+&& sudo -E fstrim -av \
+&& sudo -E shutdown now
+```
+
+Now, back on your Proxmox host, convert the VM to a new template:
+
+```
+qm template <vmid>
+```
+
+## cloudinit
+
+It is useful to install the qemu guest agent on your VMs. You can easily do this with `cloudinit` by [creating a snippet](https://registry.terraform.io/providers/Telmate/proxmox/latest/docs/guides/cloud-init%2520getting%2520started#creating-a-snippet). The VMs created by this module will expect this snippet to exist.
+
 ## k3s
 
 The entire purpose of this is to run k8s in the form of k3s on top. I really like [this project](https://github.com/fvumbaca/terraform-proxmox-k3s), save for two things:

@@ -62,14 +62,12 @@ resource "proxmox_vm_qemu" "k3s-support" {
     tag       = var.support_node_settings.network_tag
   }
 
+  # cloudinit
   os_type = "cloud-init"
-
+  cicustom   = "vendor=local:snippets/qemu-guest-agent.yml" # /var/lib/vz/snippets/qemu-guest-agent.yml
   ciuser = var.support_node_settings.user
-
   ipconfig0 = "ip=${local.support_node_ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
-
   sshkeys = file(var.authorized_keys_file)
-
   nameserver = var.nameserver
 
   connection {
@@ -102,14 +100,6 @@ resource "proxmox_vm_qemu" "k3s-support" {
       "rm -r /tmp/install.sh",
     ]
   }
-
-  # update and install guest tools
-  provisioner "remote-exec" {
-    inline = [
-      templatefile("${path.module}/scripts/prepare-vm.sh.tftpl", {})
-    ]
-  }
-
 }
 
 resource "random_password" "support-db-password" {

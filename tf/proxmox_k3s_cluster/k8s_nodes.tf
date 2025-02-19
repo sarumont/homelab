@@ -92,27 +92,19 @@ resource "proxmox_vm_qemu" "k3s-node" {
     tag       = each.value.network_tag
   }
 
+  # cloudinit
   os_type = "cloud-init"
-
+  cicustom   = "vendor=local:snippets/qemu-guest-agent.yml" # /var/lib/vz/snippets/qemu-guest-agent.yml
+  ciupgrade = true
   ciuser = each.value.user
-
   ipconfig0 = "ip=${each.value.ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
-
   sshkeys = file(var.authorized_keys_file)
-
   nameserver = var.nameserver
 
   connection {
     type = "ssh"
     user = each.value.user
     host = each.value.ip
-  }
-
-  # update and install guest tools
-  provisioner "remote-exec" {
-    inline = [
-      templatefile("${path.module}/scripts/prepare-vm.sh.tftpl", {})
-    ]
   }
 
   provisioner "remote-exec" {
@@ -132,15 +124,6 @@ resource "proxmox_vm_qemu" "k3s-node" {
         }]
 
         http_proxy  = var.http_proxy
-      })
-    ]
-  }
-
-  # add DKMS modules for iGPU passthrough
-  provisioner "remote-exec" {
-    inline = [
-      templatefile("${path.module}/scripts/install-i915-dkms.sh.tftpl", {
-        SRVIO_DKMS_VERSION = var.srvio_dkms_version
       })
     ]
   }
