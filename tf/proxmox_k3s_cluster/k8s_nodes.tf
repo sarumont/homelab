@@ -122,7 +122,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
         tokens       = [random_password.k3s-server-token.result]
         alt_names    = concat([local.support_node_ip], var.api_hostnames)
         server_hosts = []
-        node_taints  = ["CriticalAddonsOnly=true:NoExecute"]
+        node_taints  = each.value.taints
         disable      = var.k3s_disable_components
         datastores = [{
           host     = "${local.support_node_ip}:3306"
