@@ -21,7 +21,7 @@ resource "kubernetes_manifest" "lb_advertisement" {
     "kind"       = "L2Advertisement"
     "metadata" = {
       "name"      = "lb-pool-advertisement"
-      "namespace"  = kubernetes_namespace.metallb_ns.metadata.0.name
+      "namespace"  = "metallb-system"
     }
     "spec" = {
       "ipAddressPools" = [
