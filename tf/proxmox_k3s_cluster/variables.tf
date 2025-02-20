@@ -85,7 +85,7 @@ variable "node_pools" {
     // has to be duplicated because we cannot reference another var here
     template = string
 
-    taints = optional(list(string)),
+    taints = optional(list(string), []),
 
     cores          = optional(number, 2),
     sockets        = optional(number, 1),

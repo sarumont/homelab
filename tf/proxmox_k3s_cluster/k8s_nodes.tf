@@ -1,5 +1,4 @@
 locals {
-
   listed_cluster_nodes = flatten([
     for pool in var.node_pools :
     [
@@ -38,12 +37,12 @@ resource "proxmox_vm_qemu" "k3s-node" {
 
   pool = var.proxmox_resource_pool
 
-  machine = "q35"
-  bios    = "ovmf"
-  onboot  = true
+  machine = "q35"  # required for PCI mapping
+  bios    = "ovmf" # required for DKMS modules for SRVIO
   cores   = each.value.cores
   sockets = each.value.sockets
   memory  = each.value.memory
+  onboot  = true
 
   boot    = "order=scsi0" # has to be the same as the OS disk of the template
   scsihw  = "virtio-scsi-single"
@@ -52,7 +51,10 @@ resource "proxmox_vm_qemu" "k3s-node" {
   serial {
     id = 0
   }
-
+  efidisk {
+    efitype = "4m"
+    storage = each.value.storage_id
+  }
   disks {
     scsi {
       scsi0 {
@@ -94,18 +96,18 @@ resource "proxmox_vm_qemu" "k3s-node" {
   }
 
   # cloudinit
-  os_type = "cloud-init"
-  cicustom   = "vendor=local:snippets/qemu-guest-agent.yml" # /var/lib/vz/snippets/qemu-guest-agent.yml
-  ciuser = each.value.user
-  ciupgrade = true
-  ipconfig0 = "ip=${each.value.ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
-  sshkeys = file(var.authorized_keys_file)
+  os_type    = "cloud-init"
+  cicustom   = "vendor=local:snippets/srvio-vm-prep.yml" # /var/lib/vz/snippets/srvio-vm-prep.yml
+  ciuser     = each.value.user
+  ciupgrade  = false
+  ipconfig0  = "ip=${each.value.ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
+  sshkeys    = file(var.authorized_keys_file)
   nameserver = var.nameserver
 
   connection {
-    type = "ssh"
-    user = each.value.user
-    host = each.value.ip
+    type    = "ssh"
+    user    = each.value.user
+    host    = each.value.ip
   }
 
   provisioner "remote-exec" {
@@ -132,7 +134,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
 data "external" "kubeconfig" {
   depends_on = [
     proxmox_vm_qemu.k3s-support,
-    proxmox_vm_qemu.k3s-node
+    proxmox_vm_qemu.k3s-node,
   ]
 
   program = [

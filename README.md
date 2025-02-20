@@ -55,9 +55,20 @@ You will have to map the device as a resource to be able to use this Terraform m
 Since most of the guides ([1](https://techbythenerd.com/posts/creating-an-ubuntu-cloud-image-in-proxmox/), [2](https://www.norocketscience.at/blog/terraform/deploy-proxmox-virtual-machines-using-cloud-init)) I have been referencing use Ubuntu, I stuck with the Ubuntu Cloud images for this install. To prep a template, you must basically do this:
 
 ```sh
+# install guestfs-tools
+sudo apt update -y && sudo apt install libguestfs-tools -y
+
+# fetch the cloudinit image
 wget https://cloud-images.ubuntu.com/oracular/current/oracular-server-cloudimg-amd64.img
-qm create 9000 --name "ubuntu-2410-cloudinit-template" --memory 2048 --net0 virtio,bridge=vmbr0
-qm importdisk 9000 oracular-server-cloudimg-amd64.img local-lvm
+
+# dates make more sense to me than silly codenames
+cp oracular-server-cloudimg-amd64.img ubuntu-2410-cloudinit-guesttools
+
+# add guest tools to the template
+virt-customize -a ubuntu-2410-cloudinit-guesttools.img --install qemu-guest-agent --run-command 'systemctl enable qemu-guest-agent.service'
+
+qm create 9000 --name "ubuntu-2410-cloudinit-guesttools" --memory 2048 --net0 virtio,bridge=vmbr0
+qm importdisk 9000 ubuntu-2410-cloudinit-guesttools.img local-lvm
 qm set 9000 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-9000-disk-0
 qm set 9000 --ide2 local-lvm:cloudinit
 qm set 9000 --boot c --bootdisk scsi0
@@ -65,47 +76,11 @@ qm set 9000 --serial0 socket --vga serial0
 qm template 9000
 ```
 
-### iGPU template
+## iGPU DKMS module
 
-You will need to further customize the previously-created template for iGPU passthrough. Create a VM from this template, ensuring you set the BIOS to UEFI, machine type to `q35`, and expand the HDD (10GB should be fine).
+Copy `tf/terraform-proxmox-k3s/snippets/srvio-vm-prep.yml` to `/var/lib/vz/snippets/` on your Proxmox host. You can edit the version specified in there if you like. This cloudinit configuration will install the DKMS module to enable the SRVIO iGPU passthrough.
 
-Finally, install the DKMS module into the VM:
-
-```sh
-export SRVIO_DKMS_VERSION="2025.02.03" # see https://github.com/strongtz/i915-sriov-dkms/releases for the latest. This should match what you installed on the Proxmox host above
-
-sudo -E apt install dkms build-* linux-headers-$(uname -r) linux-modules-extra-$(uname -r) -y
-wget https://github.com/strongtz/i915-sriov-dkms/releases/download/${SRVIO_DKMS_VERSION}/i915-sriov-dkms_${SRVIO_DKMS_VERSION}_amd64.deb
-sudo -E apt install ./i915-sriov-dkms_${SRVIO_DKMS_VERSION}_amd64.deb -y
-
-echo "blacklist xe" | sudo -E tee -a /etc/modprobe.d/blacklist.conf
-echo "options i915 enable_guc=3" | sudo -E tee -a /etc/modprobe.d/i915.conf
-
-sudo -E update-grub
-
-sudo -E apt-get clean \
-&& sudo -E apt -y autoremove --purge \
-&& sudo -E apt -y clean \
-&& sudo -E apt -y autoclean \
-&& sudo -E cloud-init clean \
-&& echo -n | sudo -E tee /etc/machine-id \
-&& echo -n | sudo -E tee /var/lib/dbus/machine-id \
-&& sudo -E sync \
-&& history -c \
-&& history -w \
-&& sudo -E fstrim -av \
-&& sudo -E shutdown now
-```
-
-Now, back on your Proxmox host, convert the VM to a new template:
-
-```
-qm template <vmid>
-```
-
-## cloudinit
-
-It is useful to install the qemu guest agent on your VMs. You can easily do this with `cloudinit` by [creating a snippet](https://registry.terraform.io/providers/Telmate/proxmox/latest/docs/guides/cloud-init%2520getting%2520started#creating-a-snippet). The VMs created by this module will expect this snippet to exist.
+Note that this happens asynchronously from the provisioner's perspective, so the Terraform module will apply successfully while this is still working. Depending on your node count and CPU power, this could take a few minutes (and will require a reboot). On my cluster, it takes 2-4 minutes for 3 nodes to complete this process. I could not get the DKMS module working otherwise, however, so this is the best I could do here.
 
 ## k3s
 

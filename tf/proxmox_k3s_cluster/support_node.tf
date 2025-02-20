@@ -65,9 +65,8 @@ resource "proxmox_vm_qemu" "k3s-support" {
 
   # cloudinit
   os_type = "cloud-init"
-  cicustom   = "vendor=local:snippets/qemu-guest-agent.yml" # /var/lib/vz/snippets/qemu-guest-agent.yml
   ciuser = var.support_node_settings.user
-  ciupgrade = true
+  ciupgrade = false
   ipconfig0 = "ip=${local.support_node_ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
   sshkeys = file(var.authorized_keys_file)
   nameserver = var.nameserver
