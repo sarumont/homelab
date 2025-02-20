@@ -5,7 +5,7 @@ resource "kubernetes_manifest" "lb_pool" {
     "kind"       = "IPAddressPool"
     "metadata" = {
       "name"      = "lb-pool"
-      "namespace"  = kubernetes_namespace.metallb_ns.metadata.0.name
+      "namespace"  = "metallb-system" # this is hardcoded in the metallb module for the moment
     }
     "spec" = {
       "addresses" = [

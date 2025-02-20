@@ -12,4 +12,3 @@ resource "helm_release" "metallb" {
   namespace  = kubernetes_namespace.metallb_ns.metadata.0.name
   version    = var.metallb_chart_version
 }
-
