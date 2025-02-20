@@ -74,14 +74,6 @@ serviceDns:
 # not using DHCP
 serviceDhcp:
   enabled: false
-
-resources:
-  requests:
-    memory: 128Mi
-    cpu: 100m
-  limits:
-    memory: 2Gi
-    cpu: 1
 EOT
   ]
 }

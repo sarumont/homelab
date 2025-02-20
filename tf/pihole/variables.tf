@@ -5,7 +5,7 @@ variable "timezone" {
 
 variable "chart_version" {
   description = "Version of the pihole Helm chart to use"
-  default = "2.18.0"
+  default = "2.27.0"
 }
 
 variable "image_version" {
