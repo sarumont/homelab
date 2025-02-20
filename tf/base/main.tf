@@ -94,30 +94,6 @@ EOT
   ]
 }
 
-# Persistent storage via NFS
-resource "helm_release" "nfs_pvc" {
-  name = "nfs-subdir-external-provisioner"
-  repository = "https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner/"
-  chart = "nfs-subdir-external-provisioner"
-  version = "4.0.18"
-  namespace = "kube-system"
-
-  set {
-    name = "nfs.server"
-    value = var.nfs_server
-  }
-
-  set {
-    name = "nfs.path"
-    value = var.nfs_path
-  }
-
-  set {
-    name = "storageClass.defaultClass"
-    value = false
-  }
-}
-
 # hello world app
 resource "helm_release" "hello_world" {
   name       = "hello-world"
