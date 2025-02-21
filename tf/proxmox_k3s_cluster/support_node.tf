@@ -24,6 +24,7 @@ resource "proxmox_vm_qemu" "k3s-support" {
 
   cores   = var.support_node_settings.cores
   sockets = var.support_node_settings.sockets
+  balloon = var.support_node_settings.balloon
   memory  = var.support_node_settings.memory
   onboot  = true
 

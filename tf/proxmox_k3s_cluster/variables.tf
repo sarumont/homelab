@@ -64,6 +64,7 @@ variable "support_node_settings" {
   type = object({
     cores          = optional(number, 2),
     sockets        = optional(number, 1),
+    balloon        = optional(number, 1024),
     memory         = optional(number, 4096),
     storage_id     = optional(string, "local-lvm"),
     disk_size      = optional(string, "10G"),
@@ -89,6 +90,7 @@ variable "node_pools" {
 
     cores          = optional(number, 2),
     sockets        = optional(number, 1),
+    balloon        = optional(number, 1024),
     memory         = optional(number, 4096),
     storage_type   = optional(string, "scsi"),
     storage_id     = optional(string, "local-lvm"),

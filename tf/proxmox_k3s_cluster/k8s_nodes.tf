@@ -41,6 +41,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
   bios    = "ovmf" # required for DKMS modules for SRVIO
   cores   = each.value.cores
   sockets = each.value.sockets
+  balloon = each.value.balloon
   memory  = each.value.memory
   onboot  = true
 
