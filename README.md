@@ -65,7 +65,9 @@ wget https://cloud-images.ubuntu.com/oracular/current/oracular-server-cloudimg-a
 cp oracular-server-cloudimg-amd64.img ubuntu-2410-cloudinit-guesttools
 
 # add guest tools to the template
-virt-customize -a ubuntu-2410-cloudinit-guesttools.img --install qemu-guest-agent --run-command 'systemctl enable qemu-guest-agent.service'
+virt-customize -a ubuntu-2410-cloudinit-guesttools.img \
+    --install qemu-guest-agent,nfs-common \
+    --run-command 'systemctl enable qemu-guest-agent.service'
 
 qm create 9000 --name "ubuntu-2410-cloudinit-guesttools" --memory 2048 --net0 virtio,bridge=vmbr0
 qm importdisk 9000 ubuntu-2410-cloudinit-guesttools.img local-lvm

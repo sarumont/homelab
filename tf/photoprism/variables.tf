@@ -49,6 +49,11 @@ variable "imports_path" {
   description = "Path to mount for Photoprism imports"
 }
 
+variable "autoimport_delay" {
+  description = "Delay before automatically importing uploads. -1 disables."
+  default = "-1"
+}
+
 variable "namespace" {
   description = "Namespace to deploy in"
   default = "photoprism"
