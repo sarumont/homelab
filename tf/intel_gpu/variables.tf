@@ -12,3 +12,8 @@ variable "shared_device_number" {
   description = "Number of times each GPU can be shared"
   default = "1"
 }
+
+variable "enable_monitoring" {
+  description = "True to enable monitoring"
+  default = true
+}

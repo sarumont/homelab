@@ -28,4 +28,9 @@ resource "helm_release" "intel_device_plugins_gpu" {
     name = "sharedDevNum"
     value = var.shared_device_number
   }
+
+  set {
+    name = "enableMonitoring"
+    value = var.enable_monitoring
+  }
 }

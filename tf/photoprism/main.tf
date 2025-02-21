@@ -84,6 +84,7 @@ config:
   PHOTOPRISM_WORKERS: 2
   PHOTOPRISM_AUTH_MODE: password
   PHOTOPRISM_SITE_URL: ${var.site_url}
+  PHOTOPRISM_AUTO_IMPORT: ${var.autoimport_delay}
 persistence:
   enabled: true
   storagePath:   &storagePath    /photoprism/storage
