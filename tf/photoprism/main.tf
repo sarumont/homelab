@@ -119,10 +119,12 @@ database:
   port: 3306
   host: ${var.db_addr}
 resources: 
-    requests: 
-        gpu.intel.com/i915: "1" 
-    limits: 
-        gpu.intel.com/i915: "1" 
+  requests: 
+    gpu.intel.com/i915: "1" 
+    memory: ${var.memory_request}
+  limits: 
+    gpu.intel.com/i915: "1" 
+    memory: ${var.memory_limit}
 EOT
   ]
 }

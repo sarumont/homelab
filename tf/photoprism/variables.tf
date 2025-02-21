@@ -54,6 +54,16 @@ variable "autoimport_delay" {
   default = "-1"
 }
 
+variable "memory_request" {
+  description = "Amount of RAM to request (minimum)"
+  default = "1Gi"
+}
+
+variable "memory_limit" {
+  description = "Amount of RAM to limit to (maximum)"
+  default = "4Gi"
+}
+
 variable "namespace" {
   description = "Namespace to deploy in"
   default = "photoprism"
