@@ -21,7 +21,7 @@ variable image_repository {
 
 variable image_version {
   description = "Unifi Controller version"
-  default = "7.3.83"
+  default = "v9.0.114"
 }
 
 variable chart_version {
