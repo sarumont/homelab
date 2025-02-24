@@ -3,8 +3,9 @@ resource "kubernetes_manifest" "lb_pool" {
     "apiVersion" = "metallb.io/v1beta1"
     "kind"       = "IPAddressPool"
     "metadata" = {
-      "name"      = var.name
+      "name"       = var.name
       "namespace"  = var.namespace
+      "autoassign" = var.autoassign
     }
     "spec" = {
       "addresses" = [
@@ -19,7 +20,7 @@ resource "kubernetes_manifest" "lb_advertisement" {
     "apiVersion" = "metallb.io/v1beta1"
     "kind"       = "L2Advertisement"
     "metadata" = {
-      "name"      = "${var.name}-advertisement"
+      "name"       = "${var.name}-advertisement"
       "namespace"  = var.namespace
     }
     "spec" = {
