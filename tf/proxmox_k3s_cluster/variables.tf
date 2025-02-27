@@ -81,10 +81,28 @@ variable "node_pools" {
   type = list(object({
     name   = string,
     size   = number,
+
+    // subnet used for the 0th interface
     subnet = string,
 
+    // subnets used for the nth interfaces defined in the networks object below
+    // must be specified like this due to how the underlying module specifies 
+    // the "ipconfigX" parameters
+    subnet1 = optional(object({
+      subnet  = string,
+      gateway = string
+    })),
+    subnet2 = optional(object({
+      subnet  = string,
+      gateway = string
+    })),
+    subnet3 = optional(object({
+      subnet  = string,
+      gateway = string
+    })),
+
     // has to be duplicated because we cannot reference another var here
-    template = string
+    template = string,
 
     taints = optional(list(string), []),
 
@@ -96,8 +114,11 @@ variable "node_pools" {
     storage_id     = optional(string, "local-lvm"),
     disk_size      = optional(string, "20G"),
     user           = optional(string, "k3s"),
-    network_tag    = optional(number, 0),
-    network_bridge = optional(string, "vmbr0"),
+
+    networks       = list(object({
+      bridge       = optional(string, "vmbr0"),
+      tag          = optional(number, 0),
+    }))
 
     // list of PCI ID mappings to use for these VMs
     pci_mappings   = optional(list(object({

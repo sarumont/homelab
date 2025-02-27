@@ -6,6 +6,21 @@ locals {
       merge(pool, {
         i  = i
         ip = cidrhost(pool.subnet, i)
+        subnet1 = pool.subnet1 == null ? null : {
+          ip = cidrhost(pool.subnet1.subnet, i)
+          bits = split("/", pool.subnet1.subnet)[1]
+          gateway = pool.subnet1.gateway
+        }
+        subnet2 = pool.subnet2 == null ? null : {
+          ip = cidrhost(pool.subnet2.subnet, i)
+          bits = split("/", pool.subnet2.subnet)[1]
+          gateway = pool.subnet2.gateway
+        }
+        subnet3 = pool.subnet3 == null ? null : {
+          ip = cidrhost(pool.subnet3.subnet, i)
+          bits = split("/", pool.subnet3.subnet)[1]
+          gateway = pool.subnet3.gateway
+        }
       })
     ]
   ])
@@ -85,15 +100,18 @@ resource "proxmox_vm_qemu" "k3s-node" {
     }
   }
 
-  network {
-    id        = 0
-    bridge    = each.value.network_bridge
-    firewall  = true
-    link_down = false
-    model     = "virtio"
-    queues    = 0
-    rate      = 0
-    tag       = each.value.network_tag
+  dynamic "network" {
+    for_each = each.value.networks
+    content { 
+      id = network.key
+      bridge    = network.value.bridge
+      firewall  = true
+      link_down = false
+      model     = "virtio"
+      queues    = 0
+      rate      = 0
+      tag       = network.value.tag
+    }
   }
 
   # cloudinit
@@ -102,6 +120,9 @@ resource "proxmox_vm_qemu" "k3s-node" {
   ciuser     = each.value.user
   ciupgrade  = false
   ipconfig0  = "ip=${each.value.ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
+  ipconfig1  = each.value.subnet1 == null ? null : "ip=${each.value.subnet1.ip}/${each.value.subnet1.bits},gw=${each.value.subnet1.gateway}"
+  ipconfig2  = each.value.subnet2 == null ? null : "ip=${each.value.subnet2.ip}/${each.value.subnet2.bits},gw=${each.value.subnet2.gateway}"
+  ipconfig3  = each.value.subnet3 == null ? null : "ip=${each.value.subnet3.ip}/${each.value.subnet3.bits},gw=${each.value.subnet3.gateway}"
   sshkeys    = file(var.authorized_keys_file)
   nameserver = var.nameserver
 
