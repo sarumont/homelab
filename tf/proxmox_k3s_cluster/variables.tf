@@ -88,18 +88,9 @@ variable "node_pools" {
     // subnets used for the nth interfaces defined in the networks object below
     // must be specified like this due to how the underlying module specifies 
     // the "ipconfigX" parameters
-    subnet1 = optional(object({
-      subnet  = string,
-      gateway = string
-    })),
-    subnet2 = optional(object({
-      subnet  = string,
-      gateway = string
-    })),
-    subnet3 = optional(object({
-      subnet  = string,
-      gateway = string
-    })),
+    subnet1 = optional(string),
+    subnet2 = optional(string),
+    subnet3 = optional(string),
 
     // has to be duplicated because we cannot reference another var here
     template = string,

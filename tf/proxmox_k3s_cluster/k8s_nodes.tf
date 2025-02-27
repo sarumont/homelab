@@ -7,19 +7,16 @@ locals {
         i  = i
         ip = cidrhost(pool.subnet, i)
         subnet1 = pool.subnet1 == null ? null : {
-          ip = cidrhost(pool.subnet1.subnet, i)
-          bits = split("/", pool.subnet1.subnet)[1]
-          gateway = pool.subnet1.gateway
+          ip = cidrhost(pool.subnet1, i)
+          bits = split("/", pool.subnet1)[1]
         }
         subnet2 = pool.subnet2 == null ? null : {
-          ip = cidrhost(pool.subnet2.subnet, i)
-          bits = split("/", pool.subnet2.subnet)[1]
-          gateway = pool.subnet2.gateway
+          ip = cidrhost(pool.subnet2, i)
+          bits = split("/", pool.subnet2)[1]
         }
         subnet3 = pool.subnet3 == null ? null : {
-          ip = cidrhost(pool.subnet3.subnet, i)
-          bits = split("/", pool.subnet3.subnet)[1]
-          gateway = pool.subnet3.gateway
+          ip = cidrhost(pool.subnet3, i)
+          bits = split("/", pool.subnet3)[1]
         }
       })
     ]
@@ -120,9 +117,9 @@ resource "proxmox_vm_qemu" "k3s-node" {
   ciuser     = each.value.user
   ciupgrade  = false
   ipconfig0  = "ip=${each.value.ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
-  ipconfig1  = each.value.subnet1 == null ? null : "ip=${each.value.subnet1.ip}/${each.value.subnet1.bits},gw=${each.value.subnet1.gateway}"
-  ipconfig2  = each.value.subnet2 == null ? null : "ip=${each.value.subnet2.ip}/${each.value.subnet2.bits},gw=${each.value.subnet2.gateway}"
-  ipconfig3  = each.value.subnet3 == null ? null : "ip=${each.value.subnet3.ip}/${each.value.subnet3.bits},gw=${each.value.subnet3.gateway}"
+  ipconfig1  = each.value.subnet1 == null ? null : "ip=${each.value.subnet1.ip}/${each.value.subnet1.bits}"
+  ipconfig2  = each.value.subnet2 == null ? null : "ip=${each.value.subnet2.ip}/${each.value.subnet2.bits}"
+  ipconfig3  = each.value.subnet3 == null ? null : "ip=${each.value.subnet3.ip}/${each.value.subnet3.bits}"
   sshkeys    = file(var.authorized_keys_file)
   nameserver = var.nameserver
 
