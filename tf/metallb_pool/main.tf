@@ -5,9 +5,9 @@ resource "kubernetes_manifest" "lb_pool" {
     "metadata" = {
       "name"       = var.name
       "namespace"  = var.namespace
-      "autoassign" = var.autoassign
     }
     "spec" = {
+      "autoAssign" = var.autoassign
       "addresses" = [
         var.lb_pool
       ]
