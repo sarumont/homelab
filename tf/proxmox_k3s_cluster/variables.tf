@@ -115,6 +115,8 @@ variable "node_pools" {
       primary_gpu  = optional(bool, false)
       rombar       = optional(bool, true)
     })), [])
+
+    use_srvio      = optional(bool, false)
   }))
 }
 

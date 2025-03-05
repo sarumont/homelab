@@ -113,7 +113,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
 
   # cloudinit
   os_type    = "cloud-init"
-  cicustom   = "vendor=local:snippets/srvio-vm-prep.yml" # /var/lib/vz/snippets/srvio-vm-prep.yml
+  cicustom   = each.value.use_srvio ? "vendor=local:snippets/srvio-vm-prep.yml" : "" # /var/lib/vz/snippets/srvio-vm-prep.yml
   ciuser     = each.value.user
   ciupgrade  = false
   ipconfig0  = "ip=${each.value.ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
