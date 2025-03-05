@@ -42,7 +42,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
 
   for_each = local.mapped_cluster_nodes
 
-  target_node = var.proxmox_node
+  target_node = each.value.proxmox_node
   name        = "${var.cluster_name}-${each.key}"
 
   clone = each.value.template

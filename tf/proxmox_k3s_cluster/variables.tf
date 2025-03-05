@@ -1,8 +1,3 @@
-variable "proxmox_node" {
-  description = "Proxmox node to create VMs on."
-  type        = string
-}
-
 variable "authorized_keys_file" {
   description = "Path to file containing public SSH keys for remoting into nodes."
   type        = string
@@ -62,6 +57,7 @@ variable "proxmox_resource_pool" {
 
 variable "support_node_settings" {
   type = object({
+    proxmox_node   = string,
     cores          = optional(number, 2),
     sockets        = optional(number, 1),
     balloon        = optional(number, 1024),
@@ -79,8 +75,9 @@ variable "support_node_settings" {
 variable "node_pools" {
   description = "Node pool definitions for the cluster."
   type = list(object({
-    name   = string,
-    size   = number,
+    name         = string,
+    size         = number,
+    proxmox_node = string,
 
     // subnet used for the 0th interface
     subnet = string,
@@ -95,7 +92,7 @@ variable "node_pools" {
     // has to be duplicated because we cannot reference another var here
     template = string,
 
-    taints = optional(list(string), []),
+    taints   = optional(list(string), []),
 
     cores          = optional(number, 2),
     sockets        = optional(number, 1),
