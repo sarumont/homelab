@@ -35,17 +35,16 @@ resource "helm_release" "pihole" {
 
   values = [
 <<EOT
-image:
-  tag: ${var.image_version}
-
 extraEnvVars: 
   TZ: ${var.timezone}
+  FTLCONF_dns_listeningMode: 'all'
 
 podDnsConfig:
   enabled: true
   policy: "None"
   nameservers:
   - 127.0.0.1
+  - 1.1.1.1
   - 9.9.9.9
 
 DNS1: 9.9.9.9
