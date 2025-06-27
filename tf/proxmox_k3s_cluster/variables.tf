@@ -89,6 +89,11 @@ variable "node_pools" {
     subnet2 = optional(string),
     subnet3 = optional(string),
 
+    // bitmask of the network, not the subnet for the nodes
+    bitmask1 = optional(string),
+    bitmask2 = optional(string),
+    bitmask3 = optional(string),
+
     // has to be duplicated because we cannot reference another var here
     template = string,
 

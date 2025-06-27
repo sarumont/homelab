@@ -8,15 +8,15 @@ locals {
         ip = cidrhost(pool.subnet, i)
         subnet1 = pool.subnet1 == null ? null : {
           ip = cidrhost(pool.subnet1, i)
-          bits = split("/", pool.subnet1)[1]
+          bits = pool.bitmask1
         }
         subnet2 = pool.subnet2 == null ? null : {
           ip = cidrhost(pool.subnet2, i)
-          bits = split("/", pool.subnet2)[1]
+          bits = pool.bitmask2
         }
         subnet3 = pool.subnet3 == null ? null : {
           ip = cidrhost(pool.subnet3, i)
-          bits = split("/", pool.subnet3)[1]
+          bits = pool.bitmask3
         }
       })
     ]
