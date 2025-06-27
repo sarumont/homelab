@@ -63,3 +63,23 @@ resources:
 EOT
   ]
 }
+
+resource "kubernetes_service" "plex_nodeport" {
+  metadata {
+    name = "plex-nodeport"
+    namespace  = kubernetes_namespace.ns.metadata.0.name
+  }
+  spec {
+    selector = {
+      "app.kubernetes.io/instance" = "plex"
+      "app.kubernetes.io/name"="plex"
+      "pod.name"="main"
+    }
+    type = "NodePort"
+    port {
+      node_port   = 32400
+      port        = 32400
+      target_port = 32400
+    }
+  }
+}
