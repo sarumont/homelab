@@ -37,6 +37,17 @@ entries:
     urls:
     - https://github.com/sarumont/homelab/releases/download/photoprism-0.1.0/photoprism-0.1.0.tgz
     version: 0.1.0
+  unbound:
+  - apiVersion: v2
+    appVersion: 1.23.0
+    created: "2025-07-16T17:41:16.39947841Z"
+    description: A Helm chart for deploying Unbound
+    digest: bb0161ecfaba684805438ed7acba41cf7e62e613e2c6a4f2707aec4f23360ec2
+    name: unbound
+    type: application
+    urls:
+    - https://github.com/sarumont/homelab/releases/download/unbound-0.1.4/unbound-0.1.4.tgz
+    version: 0.1.4
   unifi-controller:
   - apiVersion: v2
     appVersion: v6.5.55
@@ -57,4 +68,4 @@ entries:
     urls:
     - https://github.com/sarumont/homelab/releases/download/unifi-controller-1.1.0/unifi-controller-1.1.0.tgz
     version: 1.1.0
-generated: "2024-02-20T15:24:33.826332785Z"
+generated: "2025-07-16T17:41:16.399491975Z"
