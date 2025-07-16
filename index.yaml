@@ -40,6 +40,16 @@ entries:
   unbound:
   - apiVersion: v2
     appVersion: 1.23.0
+    created: "2025-07-16T18:05:13.34676196Z"
+    description: A Helm chart for deploying Unbound
+    digest: 73fd79d9afdfa620c17525e93e94bc9ebe92d6a6b44b7b0a361a6f2c506083f7
+    name: unbound
+    type: application
+    urls:
+    - https://github.com/sarumont/homelab/releases/download/unbound-0.1.5/unbound-0.1.5.tgz
+    version: 0.1.5
+  - apiVersion: v2
+    appVersion: 1.23.0
     created: "2025-07-16T17:41:16.39947841Z"
     description: A Helm chart for deploying Unbound
     digest: bb0161ecfaba684805438ed7acba41cf7e62e613e2c6a4f2707aec4f23360ec2
@@ -68,4 +78,4 @@ entries:
     urls:
     - https://github.com/sarumont/homelab/releases/download/unifi-controller-1.1.0/unifi-controller-1.1.0.tgz
     version: 1.1.0
-generated: "2025-07-16T17:41:16.399491975Z"
+generated: "2025-07-16T18:05:13.346773872Z"
