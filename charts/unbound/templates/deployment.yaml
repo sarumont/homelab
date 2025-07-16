@@ -42,7 +42,7 @@ spec:
             protocol: "TCP"
           volumeMounts:
           - name: "unbound-conf"
-            mountPath: "/etc/unbound/"
+            mountPath: "/etc/unbound/custom.conf.d/"
             readOnly: true
           readinessProbe:
             tcpSocket:

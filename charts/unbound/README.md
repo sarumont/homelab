@@ -20,12 +20,12 @@ By running Unbound I am able to set my Unbound deployment as the upstream for my
 
 ## How to Use This Repo and the Chart Repo
 
-Chart Repo URL:  https://ryantiger658.github.io/unbound-helm-chart/
+Chart Repo URL:  https://sarumont.github.io/homelab/
 
 Chart Name: unbound
 
 ## To Install
 ```
-helm repo add unbound https://ryantiger658.github.io/unbound-helm-chart/
-helm install unbound/unbound deploymentname
+helm repo add unbound https://sarumont.github.io/homelab
+helm install -n <namespace> deploymentname unbound/unbound
 ```
