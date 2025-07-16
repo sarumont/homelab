@@ -9,6 +9,24 @@ resource "random_password" "admin_password" {
   special          = true
 }
 
+resource "helm_release" "unbound" {
+  name       = "unbound"
+  repository = "https://sarumont.github.io/homelab"
+  chart      = "unbound"
+  version    = var.unbound_chart_version
+  namespace  = kubernetes_namespace.pihole_ns.metadata.0.name
+  values = [
+<<EOT
+image: 
+  tag: ${var.unbound_image_tag}
+
+service:
+  spec:
+    loadBalancerIP: ${var.unbound_ip}
+EOT
+  ]
+}
+
 resource "helm_release" "pihole" {
   name       = "pihole"
   repository = "https://mojo2600.github.io/pihole-kubernetes/"
@@ -44,11 +62,11 @@ podDnsConfig:
   policy: "None"
   nameservers:
   - 127.0.0.1
-  - 1.1.1.1
+  - ${var.unbound_ip}
   - 9.9.9.9
 
-DNS1: 9.9.9.9
-DNS2: 1.1.1.1
+DNS1: ${var.unbound_ip}
+DNS2: ""
 
 hostname: pihole
 
