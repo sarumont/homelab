@@ -24,7 +24,7 @@ variable "custom_cname_entries" {
 
 variable "unbound_chart_version" {
   description = "Version of the unbound Helm chart to use"
-  default = "0.1.4"
+  default = "0.1.5"
 }
 
 variable "unbound_image_tag" {
