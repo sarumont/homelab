@@ -20,6 +20,10 @@ localRecords:
 - name: "fake4.host.net"
   ip: "10.13.10.10"
 
+additionalConfig: ""
+# additionalConfig: |
+#   "# text will be added to the end of unbound.conf"
+
 serviceAccount:
   # Specifies whether a service account should be created
   create: false
