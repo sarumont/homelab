@@ -35,3 +35,8 @@ variable "unbound_image_tag" {
 variable "unbound_ip" {
   description = "IP address to assign to Unbound DNS"
 }
+
+variable "unbound_additional_config" {
+  description = "Additional configuration to provide to unbound.conf"
+  default = ""
+}

@@ -23,6 +23,9 @@ image:
 service:
   spec:
     loadBalancerIP: ${var.unbound_ip}
+
+additionalConfig: |
+    ${var.unbound_additional_config}
 EOT
   ]
 }
