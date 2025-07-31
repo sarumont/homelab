@@ -8,6 +8,21 @@ variable "chart_version" {
   default = "23.1.1"
 }
 
+variable "namespace" {
+  description = "Namespace to create for this release"
+  default = "sonarr"
+}
+
+variable "release_name" {
+  description = "Name for the Helm release"
+  default = "sonarr"
+}
+
+variable "storage_class" {
+  description = "Storage class to use for the config PVC"
+  default = ""
+}
+
 variable "cluster_domain" {
   description = "Domain name for the cluster"
 }

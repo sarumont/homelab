@@ -1,6 +1,6 @@
 resource "kubernetes_namespace" "ns" {
   metadata {
-    name = "radarr"
+    name = var.namespace
   }
 }
 
@@ -14,47 +14,38 @@ resource "dnsimple_zone_record" "radarr_cname" {
 }
 
 resource "helm_release" "radarr" {
-  name       = "radarr"
+  name       = var.release_name
   repository = "oci://tccr.io/truecharts"
   chart      = "radarr"
   version    = var.chart_version
   namespace  = kubernetes_namespace.ns.metadata.0.name
 
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.enabled"
+  set = concat(
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.enabled"
       value = true
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.type"
+    }],
+
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.type"
       value = "nfs"
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.mountPath"
-      value = "/media/${set.value.name}"
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.path"
-      value = "${set.value.path}"
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.server"
-      value = "${set.value.server}"
-    }
-  }
+    }],
+
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.mountPath"
+      value = "/media/${val.name}"
+    }],
+
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.path"
+      value = "${val.path}"
+    }],
+
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.server"
+      value = "${val.server}"
+    }]
+  )
 
   values = [
 <<EOT
@@ -65,7 +56,7 @@ ingress:
     required: true
     ingressClassName: ${var.ingress_class}
     hosts:
-      - host: radarr.${var.cluster_domain}
+      - host: ${var.release_name}.${var.cluster_domain}
         paths:
           - path: "/"
       - host: ${var.dnsimple_record_name}.${var.dnsimple_domain}
@@ -85,6 +76,11 @@ service:
 workload:
   exportarr:
     enabled: false
+
+persistence:
+  config:
+    storageClass: ${var.storage_class}
+
 EOT
   ]
 }
