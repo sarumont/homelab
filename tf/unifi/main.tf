@@ -5,7 +5,7 @@ resource "kubernetes_namespace" "ns" {
 }
 
 resource "helm_release" "unifi" {
-  name = "unifi"
+  name = var.release_name
   namespace  = kubernetes_namespace.ns.metadata.0.name
   chart = "unifi-controller"
   repository = "https://sarumont.github.io/homelab"

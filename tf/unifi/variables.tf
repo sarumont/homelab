@@ -34,6 +34,11 @@ variable namespace {
   default = "unifi"
 }
 
+variable release_name {
+  description = "Unifi Controller Helm Release name"
+  default = "unifi"
+}
+
 variable ip {
   description = "IP to use for the Unifi Controller service"
 }
