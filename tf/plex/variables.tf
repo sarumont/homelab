@@ -13,6 +13,16 @@ variable "namespace" {
   default = "plex"
 }
 
+variable "release_name" {
+  description = "Release name for the Helm release"
+  default = "plex"
+}
+
+variable "config_storage_class" {
+  description = "Storage class to use for the config PVC"
+  default = "local-path"
+}
+
 variable "ip" {
   description = "IP address to assign to Plex"
 }

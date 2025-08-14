@@ -5,47 +5,38 @@ resource "kubernetes_namespace" "ns" {
 }
 
 resource "helm_release" "plex" {
-  name       = "plex"
+  name       = var.release_name
   repository = "oci://tccr.io/truecharts"
   chart      = "plex"
   version    = var.chart_version
   namespace  = kubernetes_namespace.ns.metadata.0.name
 
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.enabled"
+  set = concat(
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.enabled"
       value = true
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.type"
+    }],
+
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.type"
       value = "nfs"
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.mountPath"
-      value = "/media/${set.value.name}"
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.path"
-      value = "${set.value.path}"
-    }
-  }
-  dynamic "set" {
-    for_each = {for idx, val in var.nfs_volumes: idx => val}
-    content {
-      name  = "persistence.${set.value.name}.server"
-      value = "${set.value.server}"
-    }
-  }
+    }],
+
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.mountPath"
+      value = "/media/${val.name}"
+    }],
+
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.path"
+      value = "${val.path}"
+    }],
+
+    [for idx, val in var.nfs_volumes : {
+      name  = "persistence.${val.name}.server"
+      value = "${val.server}"
+    }]
+  )
 
   values = [
 <<EOT
@@ -60,6 +51,9 @@ resources:
         gpu.intel.com/i915: "1" 
     limits: 
         gpu.intel.com/i915: "1" 
+persistence:
+  config:
+    storageClass: ${var.config_storage_class}
 EOT
   ]
 }
@@ -67,7 +61,7 @@ EOT
 resource "kubernetes_service" "plex_nodeport" {
   metadata {
     name = "plex-nodeport"
-    namespace  = kubernetes_namespace.ns.metadata.0.name
+    namespace = kubernetes_namespace.ns.metadata.0.name
   }
   spec {
     selector = {
