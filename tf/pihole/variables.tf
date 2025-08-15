@@ -8,8 +8,18 @@ variable "chart_version" {
   default = "2.31.0"
 }
 
+variable "pihole_release_name" {
+  description = "Release name to use for Pihole"
+  default = "pihole"
+}
+
 variable "ip" {
   description = "IP address to assign to PiHole"
+}
+
+variable "storage_class" {
+  description = "Storage class to use for the config PVC"
+  default = "-"
 }
 
 variable "custom_dns_entries" {

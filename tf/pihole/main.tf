@@ -31,29 +31,24 @@ EOT
 }
 
 resource "helm_release" "pihole" {
-  name       = "pihole"
+  name       = var.pihole_release_name
   repository = "https://mojo2600.github.io/pihole-kubernetes/"
   chart      = "pihole"
   version    = var.chart_version
   namespace  = kubernetes_namespace.pihole_ns.metadata.0.name
 
   # Note that these won't show up in the Web UI, but they will work
-  dynamic "set" {
-    for_each = var.custom_dns_entries
-    content {
-      name  = "dnsmasq.customDnsEntries[${set.key}]"
-      value = "${set.value}"
-    }
-  }
+  set = concat(
+    [for idx, val in var.custom_dns_entries : {
+      name  = "dnsmasq.customDnsEntries[${idx}]"
+      value = "${val}"
+    }],
 
-  dynamic "set" {
-    for_each = var.custom_cname_entries
-    content {
-      name  = "dnsmasq.customCnameEntries[${set.key}]"
-      value = "${set.value}"
-    }
-  }
-
+    [for idx, val in var.custom_cname_entries : {
+      name  = "dnsmasq.customCnameEntries[${idx}]"
+      value = "${val}"
+    }],
+  )
   values = [
 <<EOT
 extraEnvVars: 
@@ -77,6 +72,7 @@ adminPassword: "${random_password.admin_password.result}"
 
 persistentVolumeClaim:
   enabled: true
+  storageClass: ${var.storage_class}
 
 # allow both the web and DNS servers to run on the same IP
 serviceWeb:
