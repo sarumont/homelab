@@ -102,10 +102,14 @@ resource "helm_release" "hello_world" {
   version    = "0.1.2"
   namespace  = "default"
 
-  set = concat ({
-    name = "ingress.enabled"
-    value = false
-  })
+  set = concat(
+    [
+      {
+        name = "ingress.enabled"
+        value = false
+      },
+    ]
+  )
 }
 
 resource "kubernetes_ingress_v1" "hello_world_ingress" {
@@ -188,10 +192,14 @@ resource "helm_release" "hello_world_external" {
   version    = "0.1.2"
   namespace  = "default"
 
-  set = concat ({
-    name = "ingress.enabled"
-    value = false
-  })
+  set = concat(
+    [
+      {
+        name = "ingress.enabled"
+        value = false
+      },
+    ]
+  )
 }
 
 resource "kubernetes_ingress_v1" "hello_world_ingress_external" {
