@@ -37,3 +37,7 @@ variable "nfs_volumes" {
     })
   )
 }
+
+variable "lb_pool" {
+  description = "Name of the LoadBalancer pool to use"
+}

@@ -46,11 +46,13 @@ service:
   main:
     type: LoadBalancer
     loadBalancerIP: ${var.ip}
+    annotations:
+      metallb.io/address-pool: ${var.lb_pool}
 resources: 
-    requests: 
-        gpu.intel.com/i915: "1" 
-    limits: 
-        gpu.intel.com/i915: "1" 
+  requests: 
+      gpu.intel.com/i915: "1" 
+  limits: 
+      gpu.intel.com/i915: "1" 
 persistence:
   config:
     storageClass: ${var.config_storage_class}
@@ -65,9 +67,9 @@ resource "kubernetes_service" "plex_nodeport" {
   }
   spec {
     selector = {
-      "app.kubernetes.io/instance" = "plex"
-      "app.kubernetes.io/name"="plex"
-      "pod.name"="main"
+      "app.kubernetes.io/name" = "plex"
+      "app.kubernetes.io/instance" = var.release_name
+      "pod.name" = "main"
     }
     type = "NodePort"
     port {
