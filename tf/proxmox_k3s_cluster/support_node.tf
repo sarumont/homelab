@@ -124,6 +124,7 @@ resource "null_resource" "k3s_nginx_config" {
 
   triggers = {
     config_change = filemd5("${path.module}/config/nginx.conf.tftpl")
+    node_ips = join(", ", local.node_ips)
   }
 
   connection {

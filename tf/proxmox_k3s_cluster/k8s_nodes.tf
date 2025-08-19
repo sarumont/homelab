@@ -56,6 +56,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
   balloon = each.value.balloon
   memory  = each.value.memory
   onboot  = true
+  automatic_reboot = true
 
   boot    = "order=scsi0" # has to be the same as the OS disk of the template
   scsihw  = "virtio-scsi-single"
@@ -80,7 +81,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
     ide {
       ide1 {
         cloudinit {
-          storage = each.value.storage_id
+          storage = each.value.cloudinit_storage_id
         }
       }
     }
@@ -100,7 +101,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
   dynamic "network" {
     for_each = each.value.networks
     content { 
-      id = network.key
+      id        = network.key
       bridge    = network.value.bridge
       firewall  = true
       link_down = false
@@ -115,7 +116,7 @@ resource "proxmox_vm_qemu" "k3s-node" {
   os_type    = "cloud-init"
   cicustom   = each.value.use_srvio ? "vendor=local:snippets/srvio-vm-prep.yml" : "" # /var/lib/vz/snippets/srvio-vm-prep.yml
   ciuser     = each.value.user
-  ciupgrade  = false
+  ciupgrade  = each.value.ciupgrade
   ipconfig0  = "ip=${each.value.ip}/${local.lan_subnet_cidr_bitnum},gw=${var.network_gateway}"
   ipconfig1  = each.value.subnet1 == null ? null : "ip=${each.value.subnet1.ip}/${each.value.subnet1.bits}"
   ipconfig2  = each.value.subnet2 == null ? null : "ip=${each.value.subnet2.ip}/${each.value.subnet2.bits}"
@@ -146,6 +147,12 @@ resource "proxmox_vm_qemu" "k3s-node" {
         }]
         http_proxy  = var.http_proxy
       })
+    ]
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      templatefile("${path.module}/scripts/install-iscsi-support.sh.tftpl", {})
     ]
   }
 }

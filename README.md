@@ -44,6 +44,20 @@ If you use VLANs, make sure to enable VLAN-aware networking for your bridged int
 
 This has been covered elsewhere, so I will leave a couple links to reference [here](https://www.michaelstinkerings.org/gpu-virtualization-with-intel-12th-gen-igpu-uhd-730/) and [here](https://github.com/Upinel/PVE-Intel-vGPU). Note the steps for installing the DKMS modules on the guests have been wrapped into my `cluster` Terraform module.
 
+I have abandoned the above approach due to fragility and simply opted to pass
+through the entire GPU. This means I have a single VM per host that has access
+to the GPU, though k8s can allocate this GPU to multiple pods. This is a bit
+more restrictive but also more stable, as I had issues with the fractionalized 
+GPU just disappearing.
+
+For this, you need to edit the kernel command line on your PVE host, adding the
+following:
+
+
+```
+intel_iommu=on iommu=pt
+```
+
 ### Mapping
 
 You will have to map the device as a resource to be able to use this Terraform module to deploy, as Proxmox will not allow raw PCI configuration via API. To do this, head to _Datacenter -> Resource Mappings_ in the Proxmox GUI and hit _Add_. Map your fractionalized GPUs in, giving them a name which you will refer to in your config.
@@ -58,24 +72,34 @@ Since most of the guides ([1](https://techbythenerd.com/posts/creating-an-ubuntu
 # install guestfs-tools
 sudo apt update -y && sudo apt install libguestfs-tools -y
 
-# fetch the cloudinit image
-wget https://cloud-images.ubuntu.com/oracular/current/oracular-server-cloudimg-amd64.img
+export VMID=9001
+export TEMPLATE_NAME=ubuntu-2504-cloudinit-guesttools
+export SOURCE_IMAGE=plucky-server-cloudimg-amd64.img
+export DEST_IMAGE=ubuntu-plucky-puffin-2504-cloudinit-guesttools.img
+export TEMPLATE_STORAGE=templates # could be local-lvm
 
-# dates make more sense to me than silly codenames
-cp oracular-server-cloudimg-amd64.img ubuntu-2410-cloudinit-guesttools
+# fetch the cloudinit image
+wget https://cloud-images.ubuntu.com/plucky/current/$SOURCE_IMAGE
+cp $SOURCE_IMAGE $DEST_IMAGE
 
 # add guest tools to the template
-virt-customize -a ubuntu-2410-cloudinit-guesttools.img \
+virt-customize -a $DEST_IMAGE \
     --install qemu-guest-agent,nfs-common \
     --run-command 'systemctl enable qemu-guest-agent.service'
 
-qm create 9000 --name "ubuntu-2410-cloudinit-guesttools" --memory 2048 --net0 virtio,bridge=vmbr0
-qm importdisk 9000 ubuntu-2410-cloudinit-guesttools.img local-lvm
-qm set 9000 --scsihw virtio-scsi-pci --scsi0 local-lvm:vm-9000-disk-0
-qm set 9000 --ide2 local-lvm:cloudinit
-qm set 9000 --boot c --bootdisk scsi0
-qm set 9000 --serial0 socket --vga serial0
-qm template 9000
+qm create $VMID --name "${TEMPLATE_NAME}" --memory 1024 --net0 virtio,bridge=vmbr0
+qm importdisk $VMID $DEST_IMAGE $TEMPLATE_STORAGE
+qm set $VMID --scsihw virtio-scsi-pci --scsi0 ${TEMPLATE_STORAGE}:${VMID}/vm-${VMID}-disk-0.raw
+qm set $VMID --ide2 ${TEMPLATE_STORAGE}:cloudinit
+qm set $VMID --boot c --bootdisk scsi0
+qm set $VMID --serial0 socket --vga serial0
+qm set $VMID --ipconfig0 ip=dhcp
+qm set $VMID --agent enabled=1
+qm resize $VMID scsi0 15G
+qm template $VMID
+
+# optionally clean up
+rm $SOURCE_IMAGE $DEST_IMAGE
 ```
 
 ## iGPU DKMS module

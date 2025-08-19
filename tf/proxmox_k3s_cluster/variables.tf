@@ -98,6 +98,7 @@ variable "node_pools" {
     template = string,
 
     taints   = optional(list(string), []),
+    ciupgrade    = optional(bool, false)
 
     cores          = optional(number, 2),
     sockets        = optional(number, 1),
@@ -105,6 +106,7 @@ variable "node_pools" {
     memory         = optional(number, 4096),
     storage_type   = optional(string, "scsi"),
     storage_id     = optional(string, "local-lvm"),
+    cloudinit_storage_id     = optional(string, "local-lvm"),
     disk_size      = optional(string, "20G"),
     user           = optional(string, "k3s"),
 
