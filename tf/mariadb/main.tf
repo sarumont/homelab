@@ -10,11 +10,11 @@ resource "kubernetes_namespace" "ns" {
 }
 
 resource "helm_release" "mariadb" {
-  name = "mariadb"
+  name       = var.release_name
   namespace  = kubernetes_namespace.ns.metadata.0.name
-  chart = "mariadb"
+  chart      = "mariadb"
   repository = "https://charts.bitnami.com/bitnami"
-  version = var.chart_version
+  version    = var.chart_version
 
   values = [
 <<EOT
@@ -31,6 +31,8 @@ primary:
     nodePorts:
       mysql:
         32306
+  persistence:
+    storageClass: ${var.storage_class}
   resources:
     requests:
       cpu: 100m

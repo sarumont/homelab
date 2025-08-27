@@ -38,3 +38,13 @@ variable namespace {
   description = "MariaDB Namespace"
   default = "mariadb"
 }
+
+variable release_name {
+  description = "MariaDB Helm Release Name"
+  default = "mariadb"
+}
+
+variable storage_class {
+  description = "Storage class to use"
+  default = "local-path"
+}
