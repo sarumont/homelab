@@ -48,21 +48,16 @@ resource "helm_release" "photoprism" {
   version    = var.chart_version
   namespace  = kubernetes_namespace.ns.metadata.0.name
 
-  dynamic "set" {
-    for_each = var.ingress_hosts
-    content {
-      name  = "ingress.hosts[${set.key}].host"
-      value = "${set.value}"
-    }
-  }
-
-  dynamic "set" {
-    for_each = var.ingress_hosts
-    content {
-      name  = "ingress.hosts[${set.key}].paths[0]"
+  set = concat(
+    [for idx, val in var.ingress_hosts : {
+      name  = "ingress.hosts[${idx}].host"
+      value = val
+    }],
+    [for idx, val in var.ingress_hosts : {
+      name  = "ingress.hosts[${idx}].paths[0]"
       value = "/"
-    }
-  }
+    }],
+  )
 
   values = [
 <<EOT
