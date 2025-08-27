@@ -155,6 +155,21 @@ resource "proxmox_vm_qemu" "k3s-node" {
       templatefile("${path.module}/scripts/install-iscsi-support.sh.tftpl", {})
     ]
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      templatefile("${path.module}/scripts/install-intel-gpu-support.sh.tftpl", {
+        pci_mappings = each.value.pci_mappings
+      })
+    ]
+  }
+
+  # always reboot for good measure - 'automatic_reboot' above doesn't seem to do the trick
+  provisioner "remote-exec" {
+    inline = [
+      "sudo shutdown -r 5"
+    ]
+  }
 }
 
 data "external" "kubeconfig" {

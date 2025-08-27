@@ -23,3 +23,5 @@ curl -sfL https://get.k3s.io | sh -s - ${mode} \
 --datastore-endpoint="mysql://${db.user}:${db.password}@tcp(${db.host})/${db.name}" \
 %{ endfor ~}
 --log $HOME/.k3s-install-log.txt
+
+# vim: set ft=bash:

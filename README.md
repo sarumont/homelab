@@ -51,11 +51,18 @@ more restrictive but also more stable, as I had issues with the fractionalized
 GPU just disappearing.
 
 For this, you need to edit the kernel command line on your PVE host, adding the
-following:
-
+following to `GRUB_CMDLINE_LINUX_DEFAULT` in `/etc/default/grub`:
 
 ```
 intel_iommu=on iommu=pt
+```
+
+followed by:
+
+```
+echo i915 >> /etc/modprobe.d/blacklist.conf
+update-grub
+reboot
 ```
 
 ### Mapping
