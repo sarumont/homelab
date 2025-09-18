@@ -14,7 +14,7 @@ resource "helm_release" "postgres" {
   namespace  = kubernetes_namespace.ns.metadata.0.name
   chart      = "postgresql"
   repository = "https://charts.bitnami.com/bitnami"
-  # version    = var.chart_version
+  version    = var.chart_version
 
   values = [
 <<EOT
