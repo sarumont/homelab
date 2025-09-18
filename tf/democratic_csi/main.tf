@@ -20,7 +20,7 @@ csiDriver:
 
 storageClasses:
 - name: truenas-iscsi-csi
-  defaultClass: false
+  defaultClass: ${var.default_class}
   reclaimPolicy: Delete
   volumeBindingMode: Immediate
   allowVolumeExpansion: true

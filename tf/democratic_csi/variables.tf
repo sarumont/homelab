@@ -40,3 +40,8 @@ variable "iscsi_extent_rpm" {
   description = "Extent RPM to use for iSCSI provisioning"
   default = "7200"
 }
+
+variable "default_class" {
+  description = "True if this should be the default storage class"
+  default = false
+}
