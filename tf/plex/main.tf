@@ -50,12 +50,16 @@ service:
       metallb.io/address-pool: ${var.lb_pool}
 resources: 
   requests: 
-      gpu.intel.com/i915: "1" 
+    gpu.intel.com/i915: "1" 
+    memory: 4Gi
   limits: 
-      gpu.intel.com/i915: "1" 
+    gpu.intel.com/i915: "1" 
+    memory: 8Gi
 persistence:
   config:
     storageClass: ${var.config_storage_class}
+  transcode:
+    size: 4Gi
 EOT
   ]
 }
