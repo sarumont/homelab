@@ -79,10 +79,10 @@ Since most of the guides ([1](https://techbythenerd.com/posts/creating-an-ubuntu
 # install guestfs-tools
 sudo apt update -y && sudo apt install libguestfs-tools -y
 
-export VMID=9001
-export TEMPLATE_NAME=ubuntu-2504-cloudinit-guesttools
+export VMID=9002
+export TEMPLATE_NAME=ubuntu-2510-cloudinit-guesttools
 export SOURCE_IMAGE=plucky-server-cloudimg-amd64.img
-export DEST_IMAGE=ubuntu-plucky-puffin-2504-cloudinit-guesttools.img
+export DEST_IMAGE=ubuntu-questing-quokka-2510-cloudinit-guesttools.img
 export TEMPLATE_STORAGE=templates # could be local-lvm
 
 # fetch the cloudinit image
