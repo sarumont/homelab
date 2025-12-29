@@ -10,7 +10,7 @@ resource "dnsimple_zone_record" "dns_record" {
 
 resource "helm_release" "helm_chart" {
   name             = var.release_name
-  repository       = "oci://tccr.io/truecharts"
+  repository       = "oci://oci.trueforge.org/truecharts"
   chart            = var.chart_name
   version          = var.chart_version
   namespace        = var.namespace
