@@ -15,7 +15,7 @@ resource "dnsimple_zone_record" "sonarr_cname" {
 
 resource "helm_release" "sonarr" {
   name       = var.release_name
-  repository = "oci://tccr.io/truecharts"
+  repository = "oci://oci.trueforge.org/truecharts"
   chart      = "sonarr"
   version    = var.chart_version
   namespace  = kubernetes_namespace.ns.metadata.0.name

@@ -10,7 +10,7 @@ resource "dnsimple_zone_record" "lms_cname" {
 
 resource "helm_release" "lms" {
   name       = "logitech-media-server"
-  repository = "oci://tccr.io/truecharts"
+  repository = "oci://oci.trueforge.org/truecharts"
   chart      = "logitech-media-server"
   version    = var.chart_version
   namespace  = var.namespace
