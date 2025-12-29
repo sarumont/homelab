@@ -5,7 +5,7 @@ variable storage_class {
 
 variable chart_version {
   description = "Cloudnative PG chart version"
-  default = "1.0.11"
+  default = "0.26.1"
 }
 
 variable namespace {
