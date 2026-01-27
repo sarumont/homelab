@@ -15,7 +15,7 @@ resource "dnsimple_zone_record" "radarr_cname" {
 
 resource "helm_release" "radarr" {
   name       = var.release_name
-  repository = "oci://tccr.io/truecharts"
+  repository = "oci://oci.trueforge.org/truecharts"
   chart      = "radarr"
   version    = var.chart_version
   namespace  = kubernetes_namespace.ns.metadata.0.name
