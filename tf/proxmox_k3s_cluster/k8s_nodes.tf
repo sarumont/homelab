@@ -186,3 +186,24 @@ data "external" "kubeconfig" {
     "echo '{\"kubeconfig\":\"'$(sudo cat /etc/rancher/k3s/k3s.yaml | base64)'\"}'"
   ]
 }
+
+resource "null_resource" "k8s_node_cleanup" {
+  for_each = local.mapped_cluster_nodes
+
+  triggers = {
+    node_name = proxmox_vm_qemu.k3s-node[each.key].name
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = <<-EOT
+      kubectl drain ${self.triggers.node_name} --ignore-daemonsets --delete-emptydir-data --force --timeout=120s
+      while kubectl get volumeattachments -o json | jq -e '.items[] | select(.spec.nodeName=="${self.triggers.node_name}")' > /dev/null 2>&1; do
+        echo "Waiting for volume detachments..."
+        sleep 5
+      done
+      kubectl delete csinode ${self.triggers.node_name} --ignore-not-found
+      kubectl delete node ${self.triggers.node_name}
+    EOT
+  }
+}
