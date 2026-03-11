@@ -39,7 +39,7 @@ resource "proxmox_lxc" "backup" {
   ostemplate   = var.ostemplate
   password     = random_password.root.result
   unprivileged = true
-  start        = true
+  start        = false
   onboot       = true
 
   cores  = var.cores
@@ -66,8 +66,28 @@ resource "proxmox_lxc" "backup" {
   }
 }
 
-resource "null_resource" "provision" {
+resource "null_resource" "start" {
   depends_on = [proxmox_lxc.backup]
+
+  triggers = {
+    lxc_id = proxmox_lxc.backup.id
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      curl -sk -X POST \
+        -H "Authorization: PVEAuthCookie=$(curl -sk -d 'username=${var.proxmox_user}&password=${var.proxmox_password}' \
+          ${var.proxmox_api_url}/access/ticket | jq -r '.data.ticket')" \
+        -H "CSRFPreventionToken: $(curl -sk -d 'username=${var.proxmox_user}&password=${var.proxmox_password}' \
+          ${var.proxmox_api_url}/access/ticket | jq -r '.data.CSRFPreventionToken')" \
+        ${var.proxmox_api_url}/nodes/${var.proxmox_node}/lxc/${proxmox_lxc.backup.vmid}/status/start
+      sleep 10
+    EOT
+  }
+}
+
+resource "null_resource" "provision" {
+  depends_on = [null_resource.start]
 
   triggers = {
     lxc_id = proxmox_lxc.backup.id
