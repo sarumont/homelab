@@ -38,7 +38,7 @@ resource "proxmox_lxc" "backup" {
   hostname     = var.hostname
   ostemplate   = var.ostemplate
   password     = random_password.root.result
-  unprivileged = true
+  unprivileged = false
   start        = true
   onboot       = true
 
@@ -60,10 +60,6 @@ resource "proxmox_lxc" "backup" {
   nameserver      = var.nameserver
   ssh_public_keys = file(var.authorized_keys_file)
 
-  features {
-    nesting = false
-    mount   = "nfs"
-  }
 }
 
 resource "null_resource" "provision" {
