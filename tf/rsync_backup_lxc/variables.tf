@@ -3,23 +3,6 @@ variable "proxmox_node" {
   type        = string
 }
 
-variable "proxmox_api_url" {
-  description = "Proxmox API URL (e.g. https://192.168.1.15:8006/api2/json)."
-  type        = string
-}
-
-variable "proxmox_user" {
-  description = "Proxmox user for API auth (e.g. root@pam)."
-  type        = string
-  default     = "root@pam"
-}
-
-variable "proxmox_password" {
-  description = "Proxmox password for API auth."
-  type        = string
-  sensitive   = true
-}
-
 variable "hostname" {
   description = "Hostname for the LXC container."
   type        = string
@@ -77,11 +60,6 @@ variable "network_bridge" {
 
 variable "authorized_keys_file" {
   description = "Path to file containing public SSH keys for root access."
-  type        = string
-}
-
-variable "ssh_private_key_file" {
-  description = "Path to private SSH key for Terraform to connect to the container."
   type        = string
 }
 
