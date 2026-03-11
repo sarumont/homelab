@@ -1,0 +1,48 @@
+#!/bin/bash
+set -euo pipefail
+
+# Install required packages
+apt-get update
+apt-get install -y rsync nfs-common
+
+# Setup NFS mounts
+%{ for mount in nfs_mounts ~}
+mkdir -p ${mount.mount_point}
+echo "${mount.server}:${mount.path} ${mount.mount_point} nfs defaults,_netdev 0 0" >> /etc/fstab
+%{ endfor ~}
+mount -a
+
+# Setup SSH keypair for backup destinations
+mkdir -p /root/.ssh
+chmod 700 /root/.ssh
+cat > /root/.ssh/id_ed25519 << 'SSHKEY'
+${chomp(backup_ssh_private_key)}
+SSHKEY
+chmod 600 /root/.ssh/id_ed25519
+
+cat > /root/.ssh/config << 'SSHCONFIG'
+Host *
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+SSHCONFIG
+chmod 600 /root/.ssh/config
+
+# Write backup scripts, systemd services, and timers
+%{ for cfg in backup_configs ~}
+echo '${cfg.script_b64}' | base64 -d > /usr/local/bin/${cfg.name}.sh
+chmod +x /usr/local/bin/${cfg.name}.sh
+echo '${cfg.service_b64}' | base64 -d > /etc/systemd/system/${cfg.name}.service
+echo '${cfg.timer_b64}' | base64 -d > /etc/systemd/system/${cfg.name}.timer
+%{ if cfg.has_excludes ~}
+mkdir -p /etc/rsync-excludes
+echo '${cfg.excludes_b64}' | base64 -d > /etc/rsync-excludes/${cfg.name}
+%{ endif ~}
+%{ endfor ~}
+
+# Enable and start all timers
+systemctl daemon-reload
+%{ for cfg in backup_configs ~}
+systemctl enable --now ${cfg.name}.timer
+%{ endfor ~}
+
+echo "Rsync backup LXC provisioning complete."

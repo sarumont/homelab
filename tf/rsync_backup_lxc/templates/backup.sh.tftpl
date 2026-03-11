@@ -1,0 +1,5 @@
+#!/bin/bash
+set -euo pipefail
+echo "$(date '+%Y-%m-%d %H:%M:%S') Starting ${name} backup..."
+rsync ${flags}%{ if length(exclude_patterns) > 0 } --exclude-from=/etc/rsync-excludes/${name}%{ endif } ${source} ${destination}
+echo "$(date '+%Y-%m-%d %H:%M:%S') ${name} backup complete."

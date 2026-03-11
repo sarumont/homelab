@@ -1,0 +1,6 @@
+[Unit]
+Description=Rsync backup: ${name}
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/${name}.sh

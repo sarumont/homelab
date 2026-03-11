@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer for rsync backup: ${name}
+
+[Timer]
+OnCalendar=${schedule}
+Persistent=true
+
+[Install]
+WantedBy=timers.target
