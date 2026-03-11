@@ -5,11 +5,14 @@ set -euo pipefail
 apt-get update
 apt-get install -y rsync nfs-common
 
-# Setup NFS mounts
+# Setup NFS mounts (idempotent)
 %{ for mount in nfs_mounts ~}
 mkdir -p ${mount.mount_point}
-echo "${mount.server}:${mount.path} ${mount.mount_point} nfs defaults,_netdev 0 0" >> /etc/fstab
+if ! grep -q '${mount.server}:${mount.path} ${mount.mount_point}' /etc/fstab; then
+  echo "${mount.server}:${mount.path} ${mount.mount_point} nfs defaults,_netdev 0 0" >> /etc/fstab
+fi
 %{ endfor ~}
+systemctl daemon-reload
 mount -a
 
 # Setup SSH keypair for backup destinations
