@@ -38,7 +38,7 @@ resource "proxmox_lxc" "backup" {
   hostname     = var.hostname
   ostemplate   = var.ostemplate
   password     = random_password.root.result
-  unprivileged = false
+  unprivileged = true
   start        = true
   onboot       = true
 
