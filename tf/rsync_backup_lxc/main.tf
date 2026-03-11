@@ -62,8 +62,37 @@ resource "proxmox_lxc" "backup" {
 
 }
 
-resource "null_resource" "provision" {
+resource "null_resource" "apparmor_unconfined" {
   depends_on = [proxmox_lxc.backup]
+
+  triggers = {
+    lxc_id = proxmox_lxc.backup.id
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      TICKET=$(curl -sk -d "username=${var.proxmox_user}" --data-urlencode "password=${var.proxmox_password}" \
+        "${var.proxmox_api_url}/access/ticket")
+      TOKEN=$(echo "$TICKET" | jq -r '.data.ticket')
+      CSRF=$(echo "$TICKET" | jq -r '.data.CSRFPreventionToken')
+      # Enable NFS mount support
+      curl -sk -X PUT \
+        -H "Cookie: PVEAuthCookie=$TOKEN" \
+        -H "CSRFPreventionToken: $CSRF" \
+        -d "features=mount%3Dnfs" \
+        "${var.proxmox_api_url}/nodes/${var.proxmox_node}/lxc/${proxmox_lxc.backup.vmid}/config"
+      # Reboot to apply
+      curl -sk -X POST \
+        -H "Cookie: PVEAuthCookie=$TOKEN" \
+        -H "CSRFPreventionToken: $CSRF" \
+        "${var.proxmox_api_url}/nodes/${var.proxmox_node}/lxc/${proxmox_lxc.backup.vmid}/status/reboot"
+      sleep 10
+    EOT
+  }
+}
+
+resource "null_resource" "provision" {
+  depends_on = [null_resource.apparmor_unconfined]
 
   triggers = {
     lxc_id = proxmox_lxc.backup.id

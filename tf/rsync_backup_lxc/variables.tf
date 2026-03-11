@@ -3,6 +3,23 @@ variable "proxmox_node" {
   type        = string
 }
 
+variable "proxmox_api_url" {
+  description = "Proxmox API URL (e.g. https://192.168.1.15:8006/api2/json)."
+  type        = string
+}
+
+variable "proxmox_user" {
+  description = "Proxmox user for API auth."
+  type        = string
+  default     = "root@pam"
+}
+
+variable "proxmox_password" {
+  description = "Proxmox password for API auth."
+  type        = string
+  sensitive   = true
+}
+
 variable "hostname" {
   description = "Hostname for the LXC container."
   type        = string
