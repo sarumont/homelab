@@ -1,6 +1,10 @@
 #!/bin/bash
 set -euo pipefail
 
+# Set timezone
+ln -sf /usr/share/zoneinfo/${timezone} /etc/localtime
+echo "${timezone}" > /etc/timezone
+
 # Install required packages
 apt-get update
 apt-get install -y rsync nfs-common

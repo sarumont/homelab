@@ -80,6 +80,12 @@ variable "authorized_keys_file" {
   type        = string
 }
 
+variable "timezone" {
+  description = "Timezone for the container (e.g. America/Denver)."
+  type        = string
+  default     = "UTC"
+}
+
 variable "nfs_mounts" {
   description = "NFS shares to mount inside the container."
   type = list(object({
