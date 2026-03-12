@@ -11,6 +11,7 @@ locals {
         destination      = job.destination
         flags            = job.flags
         exclude_patterns = job.exclude_patterns
+        push_url         = job.push_url
       }))
       service_b64 = base64encode(templatefile("${path.module}/templates/backup.service.tftpl", {
         name = job.name

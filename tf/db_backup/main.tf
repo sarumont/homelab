@@ -3,15 +3,14 @@ locals {
   mariadb_image = "mariadb:10.11"
 
   commands = { for k, v in var.backups : k =>
-    v.db_type == "postgres" ? join(" && ", [
+    join(" && ", compact([
       "mkdir -p /backup/${v.namespace}",
-      "PGPASSWORD=\"$DB_PASSWORD\" pg_dumpall -h ${v.db_host} -p ${v.db_port} -U \"$DB_USER\" | gzip > /backup/${v.namespace}/${k}-$(date +%Y%m%d-%H%M%S).sql.gz",
+      v.db_type == "postgres"
+      ? "PGPASSWORD=\"$DB_PASSWORD\" pg_dumpall -h ${v.db_host} -p ${v.db_port} -U \"$DB_USER\" | gzip > /backup/${v.namespace}/${k}-$(date +%Y%m%d-%H%M%S).sql.gz"
+      : "mysqldump -h ${v.db_host} -P ${v.db_port} -u \"$DB_USER\" -p\"$DB_PASSWORD\" --all-databases | gzip > /backup/${v.namespace}/${k}-$(date +%Y%m%d-%H%M%S).sql.gz",
       "find /backup/${v.namespace} -name '${k}-*.sql.gz' -mtime +${var.retention_days} -delete",
-      ]) : join(" && ", [
-      "mkdir -p /backup/${v.namespace}",
-      "mysqldump -h ${v.db_host} -P ${v.db_port} -u \"$DB_USER\" -p\"$DB_PASSWORD\" --all-databases | gzip > /backup/${v.namespace}/${k}-$(date +%Y%m%d-%H%M%S).sql.gz",
-      "find /backup/${v.namespace} -name '${k}-*.sql.gz' -mtime +${var.retention_days} -delete",
-    ])
+      v.push_url != "" ? "curl -fsS -m 10 --retry 3 \"$PUSH_URL\" > /dev/null" : "",
+    ]))
   }
 }
 
@@ -73,6 +72,14 @@ resource "kubernetes_cron_job_v1" "backup" {
                     name = each.value.secret_name
                     key  = each.value.secret_password_key
                   }
+                }
+              }
+
+              dynamic "env" {
+                for_each = each.value.push_url != "" ? [1] : []
+                content {
+                  name  = "PUSH_URL"
+                  value = each.value.push_url
                 }
               }
 
