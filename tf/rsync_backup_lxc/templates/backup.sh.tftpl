@@ -4,5 +4,5 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') Starting ${name} backup..."
 rsync ${flags}%{ if length(exclude_patterns) > 0 } --exclude-from=/etc/rsync-excludes/${name}%{ endif } ${source} ${destination}
 echo "$(date '+%Y-%m-%d %H:%M:%S') ${name} backup complete."
 %{ if push_url != "" ~}
-curl -fsS -m 10 --retry 3 "${push_url}" > /dev/null
+wget -q -T 10 -t 3 -O /dev/null "${push_url}"
 %{ endif ~}
