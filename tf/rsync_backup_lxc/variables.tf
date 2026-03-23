@@ -104,5 +104,6 @@ variable "rsync_jobs" {
     flags            = string
     schedule         = string
     exclude_patterns = optional(list(string), [])
+    push_url         = optional(string, "")
   }))
 }

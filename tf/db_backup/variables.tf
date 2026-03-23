@@ -10,6 +10,7 @@ variable "backups" {
     db_user             = optional(string, null)
     secret_username_key = optional(string, "username")
     secret_password_key = optional(string, "password")
+    push_url            = optional(string, "")
   }))
 
   validation {
