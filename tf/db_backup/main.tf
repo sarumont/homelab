@@ -9,7 +9,8 @@ locals {
       ? "PGPASSWORD=\"$DB_PASSWORD\" pg_dumpall -h ${v.db_host} -p ${v.db_port} -U \"$DB_USER\" | gzip > /backup/${v.namespace}/${k}-$(date +%Y%m%d-%H%M%S).sql.gz"
       : "mysqldump -h ${v.db_host} -P ${v.db_port} -u \"$DB_USER\" -p\"$DB_PASSWORD\" --all-databases | gzip > /backup/${v.namespace}/${k}-$(date +%Y%m%d-%H%M%S).sql.gz",
       "find /backup/${v.namespace} -name '${k}-*.sql.gz' -mtime +${var.retention_days} -delete",
-      v.push_url != "" ? "wget -q -T 10 -t 3 -O /dev/null \"$PUSH_URL\"" : "",
+      v.push_url != "" && v.db_type == "mariadb" ? "apt-get update -qq > /dev/null 2>&1 && apt-get install -y -qq wget > /dev/null 2>&1 && wget -q -T 10 -t 3 -O /dev/null \"$PUSH_URL\"" : "",
+      v.push_url != "" && v.db_type != "mariadb" ? "wget -q -T 10 -t 3 -O /dev/null \"$PUSH_URL\"" : "",
     ]))
   }
 }
