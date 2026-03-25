@@ -16,7 +16,9 @@ resource "proxmox_vm_qemu" "vm" {
 
   clone = var.template
 
-  cores   = var.cores
+  cpu {
+    cores = var.cores
+  }
   memory  = var.memory
   start_at_node_boot = true
   scsihw  = "virtio-scsi-single"
@@ -48,7 +50,7 @@ resource "proxmox_vm_qemu" "vm" {
       bridge   = network.value.bridge
       firewall = true
       model    = "virtio"
-      tag      = network.value.tag > 0 ? network.value.tag : -1
+      tag      = network.value.tag > 0 ? network.value.tag : null
     }
   }
 
