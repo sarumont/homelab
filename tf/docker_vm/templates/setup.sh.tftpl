@@ -1,0 +1,47 @@
+#!/bin/bash
+set -euo pipefail
+
+# Timezone
+ln -sf /usr/share/zoneinfo/${timezone} /etc/localtime
+echo "${timezone}" > /etc/timezone
+
+# Sysctl
+%{ for key, val in sysctl_settings ~}
+echo "${key}=${val}" > /etc/sysctl.d/99-${replace(key, ".", "-")}.conf
+%{ endfor ~}
+%{ if length(sysctl_settings) > 0 ~}
+sysctl --system
+%{ endif ~}
+
+# Install Docker (idempotent)
+if ! command -v docker &>/dev/null; then
+  curl -fsSL https://get.docker.com | sh
+fi
+
+# NFS client
+if ! dpkg -s nfs-common &>/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y nfs-common
+fi
+
+# NFS mounts
+%{ for mount in nfs_mounts ~}
+mkdir -p ${mount.mount_point}
+if ! grep -q '${mount.server}:${mount.path} ${mount.mount_point}' /etc/fstab; then
+  echo "${mount.server}:${mount.path} ${mount.mount_point} nfs defaults,_netdev 0 0" >> /etc/fstab
+fi
+%{ endfor ~}
+%{ if length(nfs_mounts) > 0 ~}
+systemctl daemon-reload
+mount -a
+%{ endif ~}
+
+# Extra directories (after NFS mounts)
+%{ for dir in directories ~}
+mkdir -p ${dir}
+%{ endfor ~}
+
+# Docker workdir
+mkdir -p /opt/docker
+
+echo "docker_vm setup complete."
