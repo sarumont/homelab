@@ -111,6 +111,7 @@ resource "null_resource" "provision" {
     content = templatefile("${path.module}/templates/setup.sh.tftpl", {
       timezone               = var.timezone
       nfs_mounts             = var.nfs_mounts
+      static_routes          = var.static_routes
       backup_configs         = local.backup_configs
       backup_ssh_private_key = tls_private_key.backup_ssh.private_key_openssh
     })
