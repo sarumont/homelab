@@ -18,7 +18,7 @@ resource "proxmox_vm_qemu" "vm" {
 
   cores   = var.cores
   memory  = var.memory
-  onboot  = true
+  start_at_node_boot = true
   scsihw  = "virtio-scsi-single"
   boot    = "order=scsi0"
   agent   = 1
