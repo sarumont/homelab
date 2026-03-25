@@ -19,6 +19,16 @@ fi
 systemctl daemon-reload
 mount -a
 
+# Configure static routes
+%{ for route in static_routes ~}
+if ! ip route show ${route.destination} | grep -q 'via ${route.gateway}'; then
+  ip route add ${route.destination} via ${route.gateway}
+fi
+if ! grep -q '${route.destination} via ${route.gateway}' /etc/network/interfaces; then
+  echo "  up ip route add ${route.destination} via ${route.gateway}" >> /etc/network/interfaces
+fi
+%{ endfor ~}
+
 # Setup SSH keypair for backup destinations
 mkdir -p /root/.ssh
 chmod 700 /root/.ssh

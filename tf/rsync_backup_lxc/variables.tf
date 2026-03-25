@@ -95,6 +95,15 @@ variable "nfs_mounts" {
   }))
 }
 
+variable "static_routes" {
+  description = "Static routes to add inside the container."
+  type = list(object({
+    destination = string
+    gateway     = string
+  }))
+  default = []
+}
+
 variable "rsync_jobs" {
   description = "Rsync backup job definitions."
   type = list(object({
