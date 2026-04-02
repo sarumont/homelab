@@ -142,7 +142,7 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 # cert-manager
 module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
-  chart_version = "1.15.0"
+  chart_version = "1.20.1"
   cluster_issuer_email                   = var.issuer_email
 }
 
@@ -150,7 +150,7 @@ resource "helm_release" "cert-manager-dnsimple" {
   name       = "cert-manager-webhook-dnsimple"
   repository = "https://puzzle.github.io/cert-manager-webhook-dnsimple"
   chart      = "cert-manager-webhook-dnsimple"
-  version    = "0.1.3"
+  version    = "0.1.13"
   namespace  = "cert-manager"
 
   values = [
