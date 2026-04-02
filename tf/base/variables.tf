@@ -8,6 +8,21 @@ variable "nfd_chart_version" {
   default = "0.13.1"
 }
 
+variable "cert_manager_chart_version" {
+  description = "Version of the cert-manager Helm chart to use"
+  default = "1.20.1"
+}
+
+variable "dnsimple_webhook_chart_version" {
+  description = "Version of the cert-manager-webhook-dnsimple Helm chart to use"
+  default = "0.1.13"
+}
+
+variable "hello_world_chart_version" {
+  description = "Version of the hello-world Helm chart to use"
+  default = "0.1.2"
+}
+
 variable "cluster_domain" {
   description = "Domain to use for cluster DNS names"
 }

@@ -99,7 +99,7 @@ resource "helm_release" "hello_world" {
   name       = "hello-world"
   repository = "https://cloudecho.github.io/charts/"
   chart      = "hello"
-  version    = "0.1.2"
+  version    = var.hello_world_chart_version
   namespace  = "default"
 
   set = concat(
@@ -142,7 +142,7 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 # cert-manager
 module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
-  chart_version = "1.20.1"
+  chart_version = var.cert_manager_chart_version
   cluster_issuer_email                   = var.issuer_email
 }
 
@@ -150,8 +150,9 @@ resource "helm_release" "cert-manager-dnsimple" {
   name       = "cert-manager-webhook-dnsimple"
   repository = "https://puzzle.github.io/cert-manager-webhook-dnsimple"
   chart      = "cert-manager-webhook-dnsimple"
-  version    = "0.1.13"
+  version    = var.dnsimple_webhook_chart_version
   namespace  = "cert-manager"
+  depends_on = [module.cert_manager]
 
   values = [
 <<EOT
@@ -189,7 +190,7 @@ resource "helm_release" "hello_world_external" {
   name       = "hello-world-external"
   repository = "https://cloudecho.github.io/charts/"
   chart      = "hello"
-  version    = "0.1.2"
+  version    = var.hello_world_chart_version
   namespace  = "default"
 
   set = concat(
