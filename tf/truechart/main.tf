@@ -16,6 +16,7 @@ resource "helm_release" "helm_chart" {
   namespace        = var.namespace
   create_namespace = true
   cleanup_on_fail  = true
+  force_update     = var.force_update
 
   set = concat(
     [for idx, val in var.nfs_volumes : {
