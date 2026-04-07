@@ -50,6 +50,12 @@ variable "dnsimple_record_ttl" {
   default = 3600
 }
 
+variable "force_update" {
+  description = "Force resource replacement via delete/recreate if Helm patch fails (e.g. strategic merge patch conflicts)"
+  type        = bool
+  default     = false
+}
+
 variable "values" {
   description = "Raw YAML values to pass to the chart"
   type = list(string)
