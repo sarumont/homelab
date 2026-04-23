@@ -54,6 +54,28 @@ resource "proxmox_vm_qemu" "vm" {
     }
   }
 
+  dynamic "pci" {
+    for_each = { for i, d in var.pci_devices : i => d }
+    content {
+      id          = pci.key
+      mapping_id  = pci.value.mapping_id
+      raw_id      = pci.value.raw_id
+      pcie        = pci.value.pcie
+      rombar      = pci.value.rombar
+      primary_gpu = pci.value.primary_gpu
+    }
+  }
+
+  dynamic "usb" {
+    for_each = { for i, d in var.usb_devices : i => d }
+    content {
+      id         = usb.key
+      device_id  = usb.value.device_id
+      mapping_id = usb.value.mapping_id
+      usb3       = usb.value.usb3
+    }
+  }
+
   # cloud-init
   os_type    = "cloud-init"
   ciuser     = var.user

@@ -107,3 +107,25 @@ variable "env_vars" {
   default     = {}
   sensitive   = true
 }
+
+variable "pci_devices" {
+  description = "PCI/PCIe devices to pass through. Use mapping_id for Proxmox resource mappings, raw_id for direct PCI addresses."
+  type = list(object({
+    mapping_id  = optional(string)
+    raw_id      = optional(string)
+    pcie        = optional(bool, true)
+    rombar      = optional(bool, true)
+    primary_gpu = optional(bool, false)
+  }))
+  default = []
+}
+
+variable "usb_devices" {
+  description = "USB devices to pass through. Use device_id (vendor:product) or mapping_id for Proxmox resource mappings."
+  type = list(object({
+    device_id  = optional(string)
+    mapping_id = optional(string)
+    usb3       = optional(bool, false)
+  }))
+  default = []
+}
