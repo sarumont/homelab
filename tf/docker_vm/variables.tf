@@ -8,6 +8,12 @@ variable "hostname" {
   type        = string
 }
 
+variable "machine" {
+  description = "QEMU machine type. Use 'q35' for PCIe passthrough; defaults to PVE default (i440fx)."
+  type        = string
+  default     = ""
+}
+
 variable "template" {
   description = "Cloud-init template name to clone."
   type        = string
