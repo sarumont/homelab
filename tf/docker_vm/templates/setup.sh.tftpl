@@ -13,6 +13,13 @@ echo "${key}=${val}" > /etc/sysctl.d/99-${replace(key, ".", "-")}.conf
 sysctl --system
 %{ endif ~}
 
+# QEMU guest agent
+if ! dpkg -s qemu-guest-agent &>/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y qemu-guest-agent
+fi
+systemctl enable --now qemu-guest-agent
+
 # Install Docker (idempotent)
 if ! command -v docker &>/dev/null; then
   curl -fsSL https://get.docker.com | sh
