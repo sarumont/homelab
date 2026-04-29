@@ -25,6 +25,9 @@ resource "proxmox_vm_qemu" "vm" {
   scsihw  = "virtio-scsi-single"
   boot    = "order=scsi0"
   agent   = 1
+  serial {
+    id = 0
+  }
 
   disks {
     scsi {
