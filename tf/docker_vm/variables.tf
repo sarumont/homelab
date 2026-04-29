@@ -14,6 +14,18 @@ variable "machine" {
   default     = ""
 }
 
+variable "bios" {
+  description = "BIOS type: 'seabios' or 'ovmf'. Use 'ovmf' with q35 for PCIe passthrough."
+  type        = string
+  default     = "seabios"
+}
+
+variable "efi_storage_id" {
+  description = "Storage ID for the EFI disk. Required when bios = 'ovmf'."
+  type        = string
+  default     = ""
+}
+
 variable "template" {
   description = "Cloud-init template name to clone."
   type        = string

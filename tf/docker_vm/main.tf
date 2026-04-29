@@ -21,6 +21,7 @@ resource "proxmox_vm_qemu" "vm" {
   }
   memory  = var.memory
   machine = var.machine != "" ? var.machine : null
+  bios    = var.bios
   start_at_node_boot = true
   scsihw  = "virtio-scsi-single"
   boot    = "order=scsi0"
@@ -43,6 +44,13 @@ resource "proxmox_vm_qemu" "vm" {
         cloudinit {
           storage = var.cloudinit_storage_id
         }
+      }
+    }
+    dynamic "efidisk" {
+      for_each = var.bios == "ovmf" ? [1] : []
+      content {
+        efitype = "4m"
+        storage = var.efi_storage_id != "" ? var.efi_storage_id : var.storage_id
       }
     }
   }
