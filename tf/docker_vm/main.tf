@@ -105,10 +105,11 @@ resource "null_resource" "provision" {
     compose_sha      = sha256(var.docker_compose_content)
     env_sha          = sha256(jsonencode(var.env_vars))
     setup_sha = sha256(templatefile("${path.module}/templates/setup.sh.tftpl", {
-      timezone        = var.timezone
-      nfs_mounts      = var.nfs_mounts
-      directories     = var.directories
-      sysctl_settings = var.sysctl_settings
+      timezone           = var.timezone
+      nfs_mounts         = var.nfs_mounts
+      directories        = var.directories
+      sysctl_settings    = var.sysctl_settings
+      install_intel_gpu  = var.install_intel_gpu
     }))
   }
 
@@ -122,10 +123,11 @@ resource "null_resource" "provision" {
   provisioner "file" {
     destination = "/tmp/setup.sh"
     content = templatefile("${path.module}/templates/setup.sh.tftpl", {
-      timezone        = var.timezone
-      nfs_mounts      = var.nfs_mounts
-      directories     = var.directories
-      sysctl_settings = var.sysctl_settings
+      timezone           = var.timezone
+      nfs_mounts         = var.nfs_mounts
+      directories        = var.directories
+      sysctl_settings    = var.sysctl_settings
+      install_intel_gpu  = var.install_intel_gpu
     })
   }
 

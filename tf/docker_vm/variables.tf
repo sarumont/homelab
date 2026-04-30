@@ -126,6 +126,12 @@ variable "env_vars" {
   sensitive   = true
 }
 
+variable "install_intel_gpu" {
+  description = "Install Intel GPU drivers and configure /dev/dri permissions. Enable when passing through an Intel iGPU."
+  type        = bool
+  default     = false
+}
+
 variable "pci_devices" {
   description = "PCI/PCIe devices to pass through. Use mapping_id for Proxmox resource mappings, raw_id for direct PCI addresses."
   type = list(object({
