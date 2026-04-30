@@ -164,4 +164,9 @@ resource "null_resource" "provision" {
       "cd /opt/docker && sudo docker compose up -d --remove-orphans",
     ]
   }
+
+  # Reboot after provisioning to load any new kernel/firmware (e.g. Intel GPU drivers)
+  provisioner "remote-exec" {
+    inline = ["sudo shutdown -r +1 || true"]
+  }
 }
