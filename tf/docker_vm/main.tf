@@ -161,12 +161,41 @@ resource "null_resource" "provision" {
     inline = [
       "sudo mv /tmp/docker.env /opt/docker/.env",
       "sudo chmod 600 /opt/docker/.env",
-      "cd /opt/docker && sudo docker compose up -d --remove-orphans",
     ]
   }
 
-  # Reboot after provisioning to load any new kernel/firmware (e.g. Intel GPU drivers)
+  # Reboot to load any new kernel/firmware (e.g. Intel GPU drivers)
   provisioner "remote-exec" {
     inline = ["sudo shutdown -r +1 || true"]
+  }
+}
+
+resource "null_resource" "deploy" {
+  depends_on = [null_resource.provision]
+
+  triggers = {
+    vm_id       = proxmox_vm_qemu.vm.id
+    compose_sha = sha256(var.docker_compose_content)
+    env_sha     = sha256(jsonencode(var.env_vars))
+    setup_sha = sha256(templatefile("${path.module}/templates/setup.sh.tftpl", {
+      timezone           = var.timezone
+      nfs_mounts         = var.nfs_mounts
+      directories        = var.directories
+      sysctl_settings    = var.sysctl_settings
+      install_intel_gpu  = var.install_intel_gpu
+    }))
+  }
+
+  connection {
+    type    = "ssh"
+    user    = var.user
+    host    = local.primary_ip
+    timeout = "5m"
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "cd /opt/docker && sudo docker compose up -d --remove-orphans",
+    ]
   }
 }
