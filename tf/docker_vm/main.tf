@@ -46,12 +46,9 @@ resource "proxmox_vm_qemu" "vm" {
         }
       }
     }
-    dynamic "efidisk" {
-      for_each = var.bios == "ovmf" ? [1] : []
-      content {
-        efitype = "4m"
-        storage = var.efi_storage_id != "" ? var.efi_storage_id : var.storage_id
-      }
+    efidisk {
+      efitype = "4m"
+      storage = var.efi_storage_id != "" ? var.efi_storage_id : var.storage_id
     }
   }
 
