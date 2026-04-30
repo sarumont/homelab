@@ -20,10 +20,20 @@ resource "proxmox_vm_qemu" "vm" {
     cores = var.cores
   }
   memory  = var.memory
+  machine = var.machine != "" ? var.machine : null
+  bios    = var.bios
   start_at_node_boot = true
   scsihw  = "virtio-scsi-single"
   boot    = "order=scsi0"
   agent   = 1
+  serial {
+    id = 0
+  }
+
+  efidisk {
+    efitype = "4m"
+    storage = var.efi_storage_id != "" ? var.efi_storage_id : var.storage_id
+  }
 
   disks {
     scsi {
@@ -54,6 +64,28 @@ resource "proxmox_vm_qemu" "vm" {
     }
   }
 
+  dynamic "pci" {
+    for_each = { for i, d in var.pci_devices : i => d }
+    content {
+      id          = pci.key
+      mapping_id  = pci.value.mapping_id
+      raw_id      = pci.value.raw_id
+      pcie        = pci.value.pcie
+      rombar      = pci.value.rombar
+      primary_gpu = pci.value.primary_gpu
+    }
+  }
+
+  dynamic "usb" {
+    for_each = { for i, d in var.usb_devices : i => d }
+    content {
+      id         = usb.key
+      device_id  = usb.value.device_id
+      mapping_id = usb.value.mapping_id
+      usb3       = usb.value.usb3
+    }
+  }
+
   # cloud-init
   os_type    = "cloud-init"
   ciuser     = var.user
@@ -73,10 +105,11 @@ resource "null_resource" "provision" {
     compose_sha      = sha256(var.docker_compose_content)
     env_sha          = sha256(jsonencode(var.env_vars))
     setup_sha = sha256(templatefile("${path.module}/templates/setup.sh.tftpl", {
-      timezone        = var.timezone
-      nfs_mounts      = var.nfs_mounts
-      directories     = var.directories
-      sysctl_settings = var.sysctl_settings
+      timezone           = var.timezone
+      nfs_mounts         = var.nfs_mounts
+      directories        = var.directories
+      sysctl_settings    = var.sysctl_settings
+      install_intel_gpu  = var.install_intel_gpu
     }))
   }
 
@@ -90,10 +123,11 @@ resource "null_resource" "provision" {
   provisioner "file" {
     destination = "/tmp/setup.sh"
     content = templatefile("${path.module}/templates/setup.sh.tftpl", {
-      timezone        = var.timezone
-      nfs_mounts      = var.nfs_mounts
-      directories     = var.directories
-      sysctl_settings = var.sysctl_settings
+      timezone           = var.timezone
+      nfs_mounts         = var.nfs_mounts
+      directories        = var.directories
+      sysctl_settings    = var.sysctl_settings
+      install_intel_gpu  = var.install_intel_gpu
     })
   }
 
