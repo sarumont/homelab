@@ -30,6 +30,11 @@ resource "proxmox_vm_qemu" "vm" {
     id = 0
   }
 
+  efidisk {
+    efitype = "4m"
+    storage = var.efi_storage_id != "" ? var.efi_storage_id : var.storage_id
+  }
+
   disks {
     scsi {
       scsi0 {
@@ -45,10 +50,6 @@ resource "proxmox_vm_qemu" "vm" {
           storage = var.cloudinit_storage_id
         }
       }
-    }
-    efidisk {
-      efitype = "4m"
-      storage = var.efi_storage_id != "" ? var.efi_storage_id : var.storage_id
     }
   }
 
