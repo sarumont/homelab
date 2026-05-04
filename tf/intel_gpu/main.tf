@@ -19,18 +19,20 @@ resource "helm_release" "intel_device_plugins_gpu" {
   version    = var.device_plugins_chart_version
   namespace  = kubernetes_namespace.intel_gpu_ns.metadata.0.name
 
-  set {
-    name = "nodeFeatureRule"
-    value = true
-  }
-
-  set {
-    name = "sharedDevNum"
-    value = var.shared_device_number
-  }
-
-  set {
-    name = "enableMonitoring"
-    value = var.enable_monitoring
-  }
+  set = concat(
+    [
+      {
+        name = "nodeFeatureRule"
+        value = true
+      },
+      {
+        name = "sharedDevNum"
+        value = var.shared_device_number
+      },
+      {
+        name = "enableMonitoring"
+        value = var.enable_monitoring
+      }
+    ]
+  )
 }
