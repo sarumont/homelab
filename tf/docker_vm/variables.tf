@@ -8,6 +8,24 @@ variable "hostname" {
   type        = string
 }
 
+variable "machine" {
+  description = "QEMU machine type. Use 'q35' for PCIe passthrough; defaults to PVE default (i440fx)."
+  type        = string
+  default     = ""
+}
+
+variable "bios" {
+  description = "BIOS type: 'seabios' or 'ovmf'. Use 'ovmf' with q35 for PCIe passthrough."
+  type        = string
+  default     = "seabios"
+}
+
+variable "efi_storage_id" {
+  description = "Storage ID for the EFI disk. Required when bios = 'ovmf'."
+  type        = string
+  default     = ""
+}
+
 variable "template" {
   description = "Cloud-init template name to clone."
   type        = string
@@ -106,4 +124,32 @@ variable "env_vars" {
   type        = map(string)
   default     = {}
   sensitive   = true
+}
+
+variable "install_intel_gpu" {
+  description = "Install Intel GPU drivers and configure /dev/dri permissions. Enable when passing through an Intel iGPU."
+  type        = bool
+  default     = false
+}
+
+variable "pci_devices" {
+  description = "PCI/PCIe devices to pass through. Use mapping_id for Proxmox resource mappings, raw_id for direct PCI addresses."
+  type = list(object({
+    mapping_id  = optional(string)
+    raw_id      = optional(string)
+    pcie        = optional(bool, true)
+    rombar      = optional(bool, true)
+    primary_gpu = optional(bool, false)
+  }))
+  default = []
+}
+
+variable "usb_devices" {
+  description = "USB devices to pass through. Use device_id (vendor:product) or mapping_id for Proxmox resource mappings."
+  type = list(object({
+    device_id  = optional(string)
+    mapping_id = optional(string)
+    usb3       = optional(bool, false)
+  }))
+  default = []
 }

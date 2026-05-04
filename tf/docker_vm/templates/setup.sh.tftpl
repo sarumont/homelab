@@ -13,6 +13,13 @@ echo "${key}=${val}" > /etc/sysctl.d/99-${replace(key, ".", "-")}.conf
 sysctl --system
 %{ endif ~}
 
+# QEMU guest agent
+if ! dpkg -s qemu-guest-agent &>/dev/null 2>&1; then
+  apt-get update
+  apt-get install -y qemu-guest-agent
+fi
+systemctl enable --now qemu-guest-agent
+
 # Install Docker (idempotent)
 if ! command -v docker &>/dev/null; then
   curl -fsSL https://get.docker.com | sh
@@ -40,6 +47,13 @@ mount -a
 %{ for dir in directories ~}
 mkdir -p ${dir}
 %{ endfor ~}
+
+# Intel GPU drivers
+%{ if install_intel_gpu ~}
+apt-get install -o DPkg::Lock::Timeout=60 -y intel-microcode linux-firmware linux-generic
+echo 'SUBSYSTEM=="drm", MODE="0666"' | tee -a /etc/udev/rules.d/99-gpu-mode.rules
+udevadm control --reload-rules && udevadm trigger
+%{ endif ~}
 
 # Docker workdir
 mkdir -p /opt/docker
