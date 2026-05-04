@@ -179,20 +179,3 @@ Routing is achieved via wildcard hostnames: `app.*`. This allows apps to live at
     terragrunt run-all apply
     cd ../docker
     docker-compose up -d
-
-# TODO
-
-- [x] cert-manager / public access (via edge)
-- [ ] Traefik AUTH
-- [x] Plex
-    - [x] Volume mounts
-    - [x] Transcoding
-- [x] PiHole
-- [x] Photoprism
-- [x] Secondary Photoprism (sister-in-law - necessary because Photoprism doesn't yet have multiple library support)
-- [x] LMS
-- [ ] Family dashboard
-    - not sure what to do here yet...maybe a custom MagicMirror?
-- [ ] Backups
-    - all locally mounted volumes (anything in `~/.docker`)
-    - Photoprism (docker): `docker-compose exec -T photoprism photoprism backup -i - > photoprism-db.sql`
