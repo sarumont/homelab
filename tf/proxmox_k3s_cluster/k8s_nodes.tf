@@ -49,19 +49,21 @@ resource "proxmox_vm_qemu" "k3s-node" {
 
   pool = var.proxmox_resource_pool
 
-  machine = "q35"  # required for PCI mapping
-  bios    = "ovmf" # required for DKMS modules for SRVIO
-  cores   = each.value.cores
-  sockets = each.value.sockets
-  balloon = each.value.balloon
-  memory  = each.value.memory
-  onboot  = true
-  automatic_reboot = true
+  machine            = "q35"  # required for PCI mapping
+  bios               = "ovmf" # required for DKMS modules for SRVIO
+  balloon            = each.value.balloon
+  memory             = each.value.memory
+  start_at_node_boot = true
+  automatic_reboot   = true
 
   boot    = "order=scsi0" # has to be the same as the OS disk of the template
   scsihw  = "virtio-scsi-single"
 
   agent = 1
+  cpu {
+    cores   = each.value.cores
+    sockets = each.value.sockets
+  }
   serial {
     id = 0
   }

@@ -22,16 +22,18 @@ resource "proxmox_vm_qemu" "k3s-support" {
 
   pool = var.proxmox_resource_pool
 
-  cores   = var.support_node_settings.cores
-  sockets = var.support_node_settings.sockets
-  balloon = var.support_node_settings.balloon
-  memory  = var.support_node_settings.memory
-  onboot  = true
+  balloon            = var.support_node_settings.balloon
+  memory             = var.support_node_settings.memory
+  start_at_node_boot = true
 
   boot    = "order=scsi0" # has to be the same as the OS disk of the template
   scsihw  = "virtio-scsi-single"
 
   agent = 1
+  cpu {
+    cores   = var.support_node_settings.cores
+    sockets = var.support_node_settings.sockets
+  }
   serial {
     id = 0
   }
