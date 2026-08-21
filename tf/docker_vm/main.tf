@@ -30,9 +30,18 @@ resource "proxmox_vm_qemu" "vm" {
     id = 0
   }
 
-  efidisk {
-    efitype = "4m"
-    storage = var.efi_storage_id != "" ? var.efi_storage_id : var.storage_id
+  # Only relevant for UEFI boot - declaring this unconditionally for
+  # seabios VMs (the default) caused terraform to want to add it to
+  # already-applied seabios VMs, forcing a destroy/recreate of the
+  # whole VM the next time their provider version changed (a schema
+  # difference between provider builds surfaced this as "must add
+  # efidisk, forces replacement" against real, already-running state).
+  dynamic "efidisk" {
+    for_each = var.bios == "ovmf" ? [1] : []
+    content {
+      efitype = "4m"
+      storage = var.efi_storage_id != "" ? var.efi_storage_id : var.storage_id
+    }
   }
 
   disks {
