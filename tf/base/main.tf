@@ -144,6 +144,10 @@ module "cert_manager" {
   source        = "terraform-iaac/cert-manager/kubernetes"
   chart_version = var.cert_manager_chart_version
   cluster_issuer_email                   = var.issuer_email
+
+  providers = {
+    kubectl = kubectl_alekc
+  }
 }
 
 resource "helm_release" "cert-manager-dnsimple" {
