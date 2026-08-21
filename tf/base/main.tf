@@ -141,13 +141,50 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 
 # cert-manager
 module "cert_manager" {
-  source        = "terraform-iaac/cert-manager/kubernetes"
-  chart_version = var.cert_manager_chart_version
-  cluster_issuer_email                   = var.issuer_email
+  source                = "terraform-iaac/cert-manager/kubernetes"
+  chart_version         = var.cert_manager_chart_version
+  cluster_issuer_email  = var.issuer_email
+  # Created directly below instead, via the kubectl provider we already
+  # have configured - the module's own cluster_issuer/certificates
+  # resources need a second kubectl fork (alekc/kubectl) passed through
+  # providers = {}, which hits a real terraform bug (non-HashiCorp
+  # provider passthrough reports a false "Provider type mismatch" -
+  # confirmed with correct, verified config on every side; not fixable
+  # by renaming the local name).
+  cluster_issuer_create = false
+}
 
-  providers = {
-    kubectl = alekc
-  }
+resource "kubectl_manifest" "cert_manager_cluster_issuer" {
+  validate_schema = false
+
+  yaml_body = yamlencode({
+    apiVersion = "cert-manager.io/v1"
+    kind       = "ClusterIssuer"
+    metadata = {
+      name = "cert-manager"
+    }
+    spec = {
+      acme = {
+        server         = "https://acme-v02.api.letsencrypt.org/directory"
+        preferredChain = "ISRG Root X1"
+        email          = var.issuer_email
+        privateKeySecretRef = {
+          name = "cert-manager-private-key"
+        }
+        solvers = [
+          {
+            http01 = {
+              ingress = {
+                ingressClassName = "nginx"
+              }
+            }
+          },
+        ]
+      }
+    }
+  })
+
+  depends_on = [module.cert_manager]
 }
 
 resource "helm_release" "cert-manager-dnsimple" {
