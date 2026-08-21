@@ -175,10 +175,15 @@ moved {
   to   = time_sleep.cert_manager_wait
 }
 
-moved {
-  from = module.cert_manager.kubectl_manifest.cluster_issuer[0]
-  to   = kubectl_manifest.cert_manager_cluster_issuer
-}
+# No moved block for the ClusterIssuer: `moved` cannot cross providers
+# (confirmed - "provider gavinbunney/kubectl does not support moved
+# operations across resource types and providers"), and the old
+# resource was created via alekc/kubectl, the new one via
+# gavinbunney/kubectl. Migrated instead via a one-time
+# `terraform state rm` on the old address - kubectl_manifest's apply
+# is idempotent, so the new resource re-applying the identical
+# manifest against the already-existing ClusterIssuer is a safe no-op,
+# not a duplicate or conflict.
 
 resource "kubernetes_namespace_v1" "cert_manager" {
   metadata {
