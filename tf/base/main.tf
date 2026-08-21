@@ -140,18 +140,56 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 }
 
 # cert-manager
-module "cert_manager" {
-  source                = "terraform-iaac/cert-manager/kubernetes"
-  chart_version         = var.cert_manager_chart_version
-  cluster_issuer_email  = var.issuer_email
-  # Created directly below instead, via the kubectl provider we already
-  # have configured - the module's own cluster_issuer/certificates
-  # resources need a second kubectl fork (alekc/kubectl) passed through
-  # providers = {}, which hits a real terraform bug (non-HashiCorp
-  # provider passthrough reports a false "Provider type mismatch" -
-  # confirmed with correct, verified config on every side; not fixable
-  # by renaming the local name).
-  cluster_issuer_create = false
+#
+# Inlined from terraform-iaac/cert-manager/kubernetes instead of calling
+# it as a module - that module's required_providers unconditionally
+# declares alekc/kubectl (a second, different kubectl fork from the
+# gavinbunney/kubectl used everywhere else in this repo), and Terraform
+# demands a provider configuration for it regardless of whether the
+# resource using it is actually created (cluster_issuer_create = false
+# disables the resource but not the requirement). Passing one through
+# providers = {} under any local name hit a real terraform bug (non-
+# HashiCorp provider passthrough reports a false "Provider type
+# mismatch" on module init, confirmed with correct, verified config on
+# every side - not fixable by renaming). Inlining the handful of
+# resources the module actually creates avoids needing alekc/kubectl at
+# all: everything here uses providers already configured for this repo.
+resource "kubernetes_namespace_v1" "cert_manager" {
+  metadata {
+    annotations = {
+      name = "cert-manager"
+    }
+    name = "cert-manager"
+  }
+}
+
+resource "helm_release" "cert_manager" {
+  chart      = "cert-manager"
+  repository = "https://charts.jetstack.io"
+  name       = "cert-manager"
+  namespace  = kubernetes_namespace_v1.cert_manager.metadata.0.name
+  version    = var.cert_manager_chart_version
+
+  create_namespace = false
+
+  set = [
+    {
+      name  = "crds.enabled"
+      value = true
+    },
+    {
+      name  = "crds.keep"
+      value = true
+    },
+  ]
+
+  depends_on = [kubernetes_namespace_v1.cert_manager]
+}
+
+resource "time_sleep" "cert_manager_wait" {
+  create_duration = "60s"
+
+  depends_on = [helm_release.cert_manager]
 }
 
 resource "kubectl_manifest" "cert_manager_cluster_issuer" {
@@ -184,7 +222,7 @@ resource "kubectl_manifest" "cert_manager_cluster_issuer" {
     }
   })
 
-  depends_on = [module.cert_manager]
+  depends_on = [time_sleep.cert_manager_wait]
 }
 
 resource "helm_release" "cert-manager-dnsimple" {
@@ -193,7 +231,7 @@ resource "helm_release" "cert-manager-dnsimple" {
   chart      = "cert-manager-webhook-dnsimple"
   version    = var.dnsimple_webhook_chart_version
   namespace  = "cert-manager"
-  depends_on = [module.cert_manager]
+  depends_on = [helm_release.cert_manager]
 
   values = [
 <<EOT
