@@ -140,14 +140,120 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 }
 
 # cert-manager
-module "cert_manager" {
-  source        = "terraform-iaac/cert-manager/kubernetes"
-  chart_version = var.cert_manager_chart_version
-  cluster_issuer_email                   = var.issuer_email
+#
+# Inlined from terraform-iaac/cert-manager/kubernetes instead of calling
+# it as a module - that module's required_providers unconditionally
+# declares alekc/kubectl (a second, different kubectl fork from the
+# gavinbunney/kubectl used everywhere else in this repo), and Terraform
+# demands a provider configuration for it regardless of whether the
+# resource using it is actually created (cluster_issuer_create = false
+# disables the resource but not the requirement). Passing one through
+# providers = {} under any local name hit a real terraform bug (non-
+# HashiCorp provider passthrough reports a false "Provider type
+# mismatch" on module init, confirmed with correct, verified config on
+# every side - not fixable by renaming). Inlining the handful of
+# resources the module actually creates avoids needing alekc/kubectl at
+# all: everything here uses providers already configured for this repo.
+#
+# base was already applied for real before this change, via the
+# original module - these moved blocks tell terraform the resources
+# were renamed, not destroyed and recreated, so the existing live
+# namespace/helm release/certificates are preserved rather than
+# torn down.
+moved {
+  from = module.cert_manager.kubernetes_namespace_v1.cert_manager[0]
+  to   = kubernetes_namespace_v1.cert_manager
+}
 
-  providers = {
-    kubectl = kubectlalekc
+moved {
+  from = module.cert_manager.helm_release.cert_manager
+  to   = helm_release.cert_manager
+}
+
+moved {
+  from = module.cert_manager.time_sleep.wait
+  to   = time_sleep.cert_manager_wait
+}
+
+# No moved block for the ClusterIssuer: `moved` cannot cross providers
+# (confirmed - "provider gavinbunney/kubectl does not support moved
+# operations across resource types and providers"), and the old
+# resource was created via alekc/kubectl, the new one via
+# gavinbunney/kubectl. Migrated instead via a one-time
+# `terraform state rm` on the old address - kubectl_manifest's apply
+# is idempotent, so the new resource re-applying the identical
+# manifest against the already-existing ClusterIssuer is a safe no-op,
+# not a duplicate or conflict.
+
+resource "kubernetes_namespace_v1" "cert_manager" {
+  metadata {
+    annotations = {
+      name = "cert-manager"
+    }
+    name = "cert-manager"
   }
+}
+
+resource "helm_release" "cert_manager" {
+  chart      = "cert-manager"
+  repository = "https://charts.jetstack.io"
+  name       = "cert-manager"
+  namespace  = kubernetes_namespace_v1.cert_manager.metadata.0.name
+  version    = var.cert_manager_chart_version
+
+  create_namespace = false
+
+  set = [
+    {
+      name  = "crds.enabled"
+      value = true
+    },
+    {
+      name  = "crds.keep"
+      value = true
+    },
+  ]
+
+  depends_on = [kubernetes_namespace_v1.cert_manager]
+}
+
+resource "time_sleep" "cert_manager_wait" {
+  create_duration = "60s"
+
+  depends_on = [helm_release.cert_manager]
+}
+
+resource "kubectl_manifest" "cert_manager_cluster_issuer" {
+  validate_schema = false
+
+  yaml_body = yamlencode({
+    apiVersion = "cert-manager.io/v1"
+    kind       = "ClusterIssuer"
+    metadata = {
+      name = "cert-manager"
+    }
+    spec = {
+      acme = {
+        server         = "https://acme-v02.api.letsencrypt.org/directory"
+        preferredChain = "ISRG Root X1"
+        email          = var.issuer_email
+        privateKeySecretRef = {
+          name = "cert-manager-private-key"
+        }
+        solvers = [
+          {
+            http01 = {
+              ingress = {
+                ingressClassName = "nginx"
+              }
+            }
+          },
+        ]
+      }
+    }
+  })
+
+  depends_on = [time_sleep.cert_manager_wait]
 }
 
 resource "helm_release" "cert-manager-dnsimple" {
@@ -156,7 +262,7 @@ resource "helm_release" "cert-manager-dnsimple" {
   chart      = "cert-manager-webhook-dnsimple"
   version    = var.dnsimple_webhook_chart_version
   namespace  = "cert-manager"
-  depends_on = [module.cert_manager]
+  depends_on = [helm_release.cert_manager]
 
   values = [
 <<EOT
