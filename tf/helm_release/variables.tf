@@ -56,5 +56,11 @@ variable "dnsimple_record_ttl" {
 
 variable "values" {
   description = "Raw YAML values to pass to the chart"
-  type = list(string)
+  type        = list(string)
+  # secrets get interpolated into this YAML directly by callers (e.g.
+  # authelia's hmac_secret, mealie/karakeep's OIDC client_secret) before
+  # terraform ever sees them - terraform has no way to know that unless
+  # this variable is explicitly marked sensitive, so without this the
+  # full computed YAML (secrets included) prints in plan/apply output.
+  sensitive = true
 }
