@@ -146,7 +146,7 @@ module "cert_manager" {
   cluster_issuer_email                   = var.issuer_email
 
   providers = {
-    kubectl = kubectl-alekc
+    kubectl = kubectlalekc
   }
 }
 
