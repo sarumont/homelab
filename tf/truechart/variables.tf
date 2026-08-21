@@ -58,5 +58,12 @@ variable "force_update" {
 
 variable "values" {
   description = "Raw YAML values to pass to the chart"
-  type = list(string)
+  type        = list(string)
+  # secrets get interpolated into this YAML directly by callers (e.g.
+  # palantir's OPNsense/UniFi/Radarr/Sonarr credentials, navidrome's
+  # Last.fm API secret) before terraform ever sees them - terraform has
+  # no way to know that unless this variable is explicitly marked
+  # sensitive, so without this the full computed YAML (secrets
+  # included) prints in plan/apply output.
+  sensitive = true
 }
