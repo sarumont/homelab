@@ -154,6 +154,32 @@ resource "kubernetes_ingress_v1" "hello_world_ingress" {
 # every side - not fixable by renaming). Inlining the handful of
 # resources the module actually creates avoids needing alekc/kubectl at
 # all: everything here uses providers already configured for this repo.
+#
+# base was already applied for real before this change, via the
+# original module - these moved blocks tell terraform the resources
+# were renamed, not destroyed and recreated, so the existing live
+# namespace/helm release/certificates are preserved rather than
+# torn down.
+moved {
+  from = module.cert_manager.kubernetes_namespace_v1.cert_manager[0]
+  to   = kubernetes_namespace_v1.cert_manager
+}
+
+moved {
+  from = module.cert_manager.helm_release.cert_manager
+  to   = helm_release.cert_manager
+}
+
+moved {
+  from = module.cert_manager.time_sleep.wait
+  to   = time_sleep.cert_manager_wait
+}
+
+moved {
+  from = module.cert_manager.kubectl_manifest.cluster_issuer[0]
+  to   = kubectl_manifest.cert_manager_cluster_issuer
+}
+
 resource "kubernetes_namespace_v1" "cert_manager" {
   metadata {
     annotations = {
