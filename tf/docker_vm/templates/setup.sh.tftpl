@@ -39,6 +39,18 @@ if ! grep -q '${mount.server}:${mount.path} ${mount.mount_point}' /etc/fstab; th
 fi
 %{ endfor ~}
 %{ if length(nfs_mounts) > 0 ~}
+# docker.service only waits on network-online.target, the same target
+# an fstab _netdev NFS mount waits on - nothing orders it after the
+# mount actually completing, so a container with a bind-mount under
+# one of these paths can start before the mount lands (empty dir
+# instead of the NFS content), especially on reboot via restart policy
+# rather than a fresh `docker compose up`. RequiresMountsFor pulls in
+# the right ordering without computing the escaped .mount unit name.
+mkdir -p /etc/systemd/system/docker.service.d
+cat > /etc/systemd/system/docker.service.d/wait-for-nfs.conf <<EOF
+[Unit]
+RequiresMountsFor=%{ for mount in nfs_mounts }${mount.mount_point} %{ endfor }
+EOF
 systemctl daemon-reload
 mount -a
 %{ endif ~}
