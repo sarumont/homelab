@@ -45,17 +45,4 @@ resource "helm_release" "helm_chart" {
   )
 
   values = var.values
-
-  lifecycle {
-    # helm_release's computed `metadata` block echoes back the fully
-    # rendered chart values (secrets included) and is not marked
-    # sensitive by the provider schema - marking var.values sensitive
-    # does nothing for it. Unresolved upstream:
-    # https://github.com/hashicorp/terraform-provider-helm/issues/424
-    # https://github.com/hashicorp/terraform-provider-helm/issues/485
-    # metadata is read-only/computed, so ignoring it doesn't affect
-    # what gets applied - it just stops terraform from diffing (and
-    # printing) it on every plan.
-    ignore_changes = [metadata]
-  }
 }
